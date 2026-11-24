@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#07091c">
+  <meta name="description" content="ORYVEX — a neon color arcade challenge.">
+  <title>ORYVEX</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app">
+    <canvas id="game" aria-label="ORYVEX arcade game"></canvas>
+
+    <section id="startScreen" class="screen">
+      <div class="start-card">
+        <img class="brand-logo" src="logo.png" alt="ORYVEX neon orb logo">
+        <div class="eyebrow">THE NEON ASCENT</div>
+        <h1>ORYVEX</h1>
+        <p class="tagline">Find your color. Break the orbit.</p>
+        <button id="playBtn" class="primary">PLAY</button>
+        <div class="mode-wrap">
+          <div class="section-label">GAME MODE</div>
+          <div class="mode-row">
+            <button class="mode active" data-mode="classic">CLASSIC</button>
+            <button class="mode" data-mode="infinity">INFINITY</button>
+            <button class="mode" data-mode="hard">HARD</button>
+          </div>
+        </div>
+        <div class="menu-row">
+          <button id="settingsBtn" class="secondary">⚙ Settings</button>
+          <button id="helpBtn" class="secondary">? Help</button>
+          <button id="dailyBtn" class="secondary">✦ Daily Reward</button>
+        </div>
+        <div id="dailyNote" class="small-note"></div>
+      </div>
+    </section>
+
+    <section id="pauseScreen" class="screen hidden">
+      <div class="panel">
+        <div class="eyebrow">TAKE A BREATHER</div><h2>PAUSED</h2>
+        <button id="resumeBtn" class="primary">RESUME</button>
+        <button id="pauseHomeBtn" class="secondary wide">HOME</button>
+      </div>
+    </section>
+
+    <section id="gameOverScreen" class="screen hidden">
+      <div class="panel">
+        <div class="eyebrow">RUN COMPLETE</div><h2>GAME OVER</h2>
+        <div class="score-grid">
+          <div><span class="stat-label">SCORE</span><strong id="finalScore">0</strong></div>
+          <div><span class="stat-label">BEST</span><strong id="bestScore">0</strong></div>
+        </div>
+        <button id="continueBtn" class="secondary wide">CONTINUE · 5 ✦</button>
+        <button id="restartBtn" class="primary">RESTART</button>
+        <button id="gameOverHomeBtn" class="secondary wide">HOME</button>
+      </div>
+    </section>
+
+    <section id="settingsScreen" class="screen hidden">
+      <div class="panel">
+        <div class="eyebrow">MAKE IT YOURS</div><h2>SETTINGS</h2>
+        <label class="setting"><span>Sound effects</span><input id="soundToggle" type="checkbox" checked><i></i></label>
+        <label class="setting"><span>Vibration</span><input id="vibrationToggle" type="checkbox" checked><i></i></label>
+        <button id="settingsBackBtn" class="primary">DONE</button>
+      </div>
+    </section>
+
+    <section id="helpScreen" class="screen hidden">
+      <div class="panel help-panel">
+        <div class="eyebrow">HOW TO PLAY</div><h2>STAY IN ORBIT</h2>
+        <p>Tap, click or press <b>SPACE</b> to bounce upward. Gravity pulls you back down.</p>
+        <p>Pass through obstacle segments that match your ball's color. Touch any other color and your run ends.</p>
+        <p>Collect <b>white stars</b> for points. Grab the <b>four-color orb</b> to switch to a different random color.</p>
+        <p>Keep climbing. Obstacles get trickier as your score grows.</p>
+        <button id="helpBackBtn" class="primary">GOT IT</button>
+      </div>
+    </section>
+
+    <button id="pauseBtn" class="hud-pause hidden" aria-label="Pause">Ⅱ</button>
+    <div id="hud" class="hud hidden"><span id="hudMode">CLASSIC</span><strong id="hudScore">0</strong></div>
+    <div id="toast" class="toast"></div>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+*{box-sizing:border-box}
+:root{--bg:#07091c;--cyan:#00E5FF;--yellow:#FFD400;--purple:#B026FF;--pink:#FF2E7E;--white:#f7fbff}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--white);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overscroll-behavior:none}
+body{touch-action:none;-webkit-user-select:none;user-select:none}
+#app{position:relative;width:100%;height:100%;height:100dvh;overflow:hidden;background:radial-gradient(ellipse at 50% 20%,#11183a 0%,#07091c 62%)}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(180deg,rgba(5,7,23,.35),rgba(5,7,23,.78));z-index:3}
+.hidden{display:none!important}
+.start-card,.panel{width:min(100%,440px);padding:26px 24px;border:1px solid rgba(126,151,255,.2);border-radius:28px;background:linear-gradient(145deg,rgba(16,22,55,.93),rgba(7,9,28,.94));box-shadow:0 20px 80px #0009,0 0 40px #572dff18;backdrop-filter:blur(14px);text-align:center}
+.brand-logo{display:block;width:clamp(130px,32vw,190px);height:auto;aspect-ratio:1;object-fit:contain;margin:0 auto 5px;border-radius:28px;filter:drop-shadow(0 0 24px #583cff55)}
+.eyebrow,.section-label,.stat-label{font-size:10px;letter-spacing:.24em;font-weight:800;color:#9ba9d7}
+h1{font-size:clamp(42px,12vw,64px);line-height:1;margin:5px 0;background:linear-gradient(100deg,#fff,#a8dfff 42%,#dba0ff 75%,#ff85ba);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.1em;font-weight:950;text-shadow:0 0 28px #8c58ff33}
+h2{font-size:32px;letter-spacing:.1em;margin:8px 0 24px}
+.tagline{margin:10px 0 24px;color:#aeb9dc;font-size:13px}
+button{font:inherit;border:0;cursor:pointer;color:var(--white);-webkit-tap-highlight-color:transparent}
+button:active{transform:scale(.98)}
+.primary{width:100%;height:56px;border-radius:17px;background:linear-gradient(100deg,#00bfe9,#6554ff 58%,#d22eff);font-weight:950;letter-spacing:.18em;box-shadow:0 8px 28px #5d49ff55,inset 0 1px #ffffff70;margin:6px 0 18px}
+.mode-wrap{margin-top:2px}
+.section-label{margin-bottom:10px}
+.mode-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mode,.secondary{border:1px solid #53618d66;background:#121936;border-radius:13px;padding:12px 6px;color:#b8c4e8;font-size:11px;font-weight:850;letter-spacing:.08em}
+.mode.active{border-color:#00dfff;background:#092c42;color:#fff;box-shadow:0 0 18px #00dfff2b}
+.menu-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:15px}
+.secondary{font-size:10px;letter-spacing:0;padding:12px 4px}
+.small-note{min-height:15px;color:#a9b6dc;font-size:11px;margin-top:9px}
+.panel{max-width:370px;padding:30px 25px}
+.panel .primary{margin:12px 0 4px}
+.wide{width:100%;margin:8px 0}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+.score-grid>div{padding:16px 8px;border-radius:16px;background:#101936;border:1px solid #46548655}
+.stat-label{display:block;margin-bottom:6px}
+.score-grid strong{font-size:32px}
+.setting{display:flex;align-items:center;justify-content:space-between;padding:15px 2px;border-bottom:1px solid #39466c66;color:#dbe4ff;font-weight:650}
+.setting input{width:22px;height:22px;accent-color:#00dfff}
+.help-panel{text-align:left}
+.help-panel h2{text-align:center;font-size:25px}
+.help-panel p{font-size:14px;line-height:1.55;color:#bac6e6}
+.help-panel b{color:#fff}
+.hud{position:absolute;z-index:2;top:max(16px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:18px;padding:8px 17px;border-radius:99px;background:#080d25b8;border:1px solid #7485d34a;backdrop-filter:blur(8px);font-size:11px;letter-spacing:.13em;color:#aab7df}
+.hud strong{font-size:20px;color:#fff}
+.hud-pause{position:absolute;z-index:4;top:max(15px,env(safe-area-inset-top));right:17px;width:42px;height:42px;border-radius:50%;background:#101936d9;border:1px solid #7182c466;font-weight:900}
+.toast{position:absolute;z-index:5;left:50%;bottom:12%;transform:translate(-50%,12px);opacity:0;pointer-events:none;padding:10px 16px;border-radius:30px;background:#121a3c;border:1px solid #7e8dce66;font-size:12px;transition:.25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-height:700px){.start-card{padding:12px 18px}.brand-logo{width:105px}h1{font-size:43px}.tagline{margin:5px 0 12px}.primary{height:48px;margin-bottom:10px}.menu-row{margin-top:10px}.panel{padding:22px}}
