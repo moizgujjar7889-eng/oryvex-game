@@ -1,13 +1,13 @@
 (()=>{"use strict";
 const $=id=>document.getElementById(id),cv=$("game"),ctx=cv.getContext("2d");
-const COLORS=["#00E5FF","#FFD400","#B026FF","#FF2E7E"],TAU=Math.PI*2,HALF=Math.PI/2,G=1250,JUMP=560;
+const COLORS=["#00E5FF","#FFD400","#B026FF","#FF2E7E"],TAU=Math.PI*2,HALF=Math.PI/2,G=1400,JUMP=420;
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),mod=(a,n)=>((a%n)+n)%n,pick=a=>a[Math.floor(Math.random()*a.length)];
 const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const MODES={classic:{lives:1,speed:1,gap:1},infinity:{lives:3,speed:.85,gap:1.1},hard:{lives:1,speed:1.35,gap:.8}};
 const NOTES={classic:"One life. The pure neon climb.",infinity:"Three lives. A wrong color costs a life, not the run.",hard:"Faster spins and tighter gaps. One life."};
 let w=0,h=0,dpr=1,last=0,clock=0,slow=false,pf={t:0,n:0};
 let mode=store.get("oryvexMode","classic");if(!MODES[mode])mode="classic";
-let state="start",score=0,runStars=0,lives=1,invuln=0,started=false,continueUsed=false,shake=0,camY=0,edge=0,lastType="";
+let state="start",score=0,runStars=0,lives=1,invuln=0,started=false,continueUsed=false,shake=0,camY=0,edge=0,lastType="",count=0;
 let ball=null,obstacles=[],items=[],parts=[],waves=[],texts=[],bg=[];
 let bank=+store.get("oryvexBank",0)||0,best={},reduce=store.get("oryvexReduce","false")==="true",fx=!reduce;
 for(const m in MODES)best[m]=+store.get("oryvexBest_"+m,m==="classic"?store.get("oryvexBest",0):0)||0;
@@ -30,17 +30,17 @@ function resize(){dpr=Math.min(window.devicePixelRatio||1,2);w=window.innerWidth
 function menuDemo(){obstacles=[];items=[];[[.1,.18,50],[.93,.46,64],[.08,.82,56],[.9,.1,34]].forEach(([fx_,fy,R],i)=>{const o=mk("ring",0);o.x=w*fx_;o.y=h*fy;o.R=R;o.ext=R+6;o.dir=i%2?1:-1;obstacles.push(o)});camY=0}
 
 /* ---------- obstacles ---------- */
-function mk(type,level){const R=clamp(w*.16,44,62),m=MODES[mode];
- const o={type,x:w/2,y:0,R,th:12,rot:rand(0,TAU),dir:Math.random()<.5?-1:1,off:Math.floor(rand(0,4)),spd:(.85+Math.min(level,14)*.045)*m.speed,scroll:rand(0,500),passed:false};
- if(type==="bars")o.th=14;
+function mk(type,level){const R=clamp(w*.19,54,78),m=MODES[mode];
+ const o={type,x:w/2,y:0,R,th:14,rot:rand(0,TAU),dir:Math.random()<.5?-1:1,off:Math.floor(rand(0,4)),spd:(.85+Math.min(level,14)*.045)*m.speed,scroll:rand(0,500),passed:false};
+ if(type==="bars")o.th=16;
  o.ext={ring:R+6,double:R*1.05+6,windmill:R*1.1+6,square:R*1.05+6,triangle:R*1.15+6,bars:12}[type];return o}
-function spawn(){const level=Math.floor(score/4);
- const types=level<1?["ring"]:level<2?["ring","bars"]:level<4?["ring","bars","windmill"]:level<7?["ring","bars","windmill","square","double"]:["ring","bars","windmill","square","double","triangle"];
+function spawn(){const n=count++,level=Math.floor(n/2);
+ const types=n<2?["ring"]:n<4?["ring","double"]:n<7?["ring","double","windmill"]:n<10?["ring","double","windmill","bars"]:["ring","double","windmill","bars","square","triangle"];
  let type=pick(types);if(type===lastType&&types.length>1)type=pick(types);lastType=type;
- const o=mk(type,level),gap=rand(130,170)*MODES[mode].gap*clamp(1-level*.012,.8,1),prevEdge=edge;
+ const o=mk(type,level),gap=(n===0?60:rand(130,170))*MODES[mode].gap*clamp(1-level*.012,.8,1),prevEdge=edge;
  o.y=edge-gap-o.ext;edge=o.y-o.ext;obstacles.push(o);
  items.push({type:"star",x:w/2,y:type==="bars"?o.y-44:o.y,r:9,taken:false});
- if(level>=1&&Math.random()<.35)items.push({type:"orb",x:w/2,y:(prevEdge+o.y+o.ext)/2,r:11,taken:false})}
+ if(n>=2&&Math.random()<.35)items.push({type:"orb",x:w/2,y:(prevEdge+o.y+o.ext)/2,r:11,taken:false})}
 function ringsOf(o){if(o.type==="double"){const r=o.R*1.05;return[{r,rot:o.rot,off:o.off},{r:r*.62,rot:-o.rot+Math.PI/4,off:o.off+2}]}return[{r:o.R,rot:o.rot,off:o.off}]}
 function segsOf(o){const s=[],x=o.x,y=o.y,R=o.R;
  if(o.type==="windmill")for(let i=0;i<4;i++){const a=o.rot+i*HALF,L=R*1.1;s.push({x1:x,y1:y,x2:x+Math.cos(a)*L,y2:y+Math.sin(a)*L,c:mod(i+o.off,4)})}
@@ -65,8 +65,8 @@ function fxUpdate(dt){for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=380*
  if(ball&&state==="playing"){ball.trail.push({x:ball.x,y:ball.y});if(ball.trail.length>12)ball.trail.shift()}}
 
 /* ---------- game flow ---------- */
-function startGame(){ball={x:w/2,y:h*.7,hy:h*.7,vy:0,r:11,color:Math.floor(Math.random()*4),trail:[]};
- camY=0;obstacles=[];items=[];parts=[];waves=[];texts=[];score=0;runStars=0;lives=MODES[mode].lives;invuln=0;started=false;continueUsed=false;lastType="";edge=ball.y-130;
+function startGame(){ball={x:w/2,y:h*.7,hy:h*.7,vy:0,r:10,color:Math.floor(Math.random()*4),trail:[]};
+ camY=0;obstacles=[];items=[];parts=[];waves=[];texts=[];score=0;runStars=0;lives=MODES[mode].lives;invuln=0;started=false;continueUsed=false;lastType="";count=0;edge=ball.y-130;
  updateHud();setState("playing");last=performance.now()}
 function goHome(){ball=null;menuDemo();setState("start");refreshHome()}
 function jump(){if(state!=="playing")return;if(!started){started=true;$("tapHint").classList.add("hidden")}ball.vy=-JUMP;tone(520,.07,"triangle",.04,700)}
@@ -88,7 +88,7 @@ function phys(sd){for(const o of obstacles){o.rot+=o.dir*o.spd*sd;if(o.type==="b
  invuln=Math.max(0,invuln-sd);
  for(const o of obstacles){
   if(invuln<=0&&Math.abs(ball.y-o.y)<o.ext+ball.r+2&&hits(o)){hurt();if(state!=="playing")return}
-  if(!o.passed&&ball.y<o.y-o.ext){o.passed=true;score++;updateHud();tone(420+Math.min(score,40)*8,.05,"triangle",.025)}}
+  if(!o.passed&&ball.y<o.y-o.ext){o.passed=true;tone(420+Math.min(score,40)*8,.05,"triangle",.025)}}
  collect()}
 function stepWorld(dt){const n=Math.min(6,Math.ceil(dt/.011));for(let i=0;i<n&&state==="playing";i++)phys(dt/n);
  if(state!=="playing")return;
@@ -114,10 +114,10 @@ function drawItem(c){const y=c.y-camY;if(y<-30||y>h+30)return;ctx.save();ctx.tra
  else{ctx.rotate(clock*1.4);ctx.lineWidth=4.5;for(let i=0;i<4;i++){ctx.strokeStyle=COLORS[i];ctx.shadowColor=COLORS[i];ctx.shadowBlur=fx?12:0;ctx.beginPath();ctx.arc(0,0,c.r,-HALF+i*HALF,-HALF+(i+1)*HALF-.1);ctx.stroke()}ctx.fillStyle="#fff";ctx.shadowBlur=0;ctx.beginPath();ctx.arc(0,0,3,0,TAU);ctx.fill()}
  ctx.restore()}
 function drawBall(){const y=ball.y-camY,c=COLORS[ball.color];
- for(let i=0;i<ball.trail.length;i++){const p=ball.trail[i],k=(i+1)/ball.trail.length;ctx.globalAlpha=k*.22;ctx.fillStyle=c;ctx.beginPath();ctx.arc(p.x,p.y-camY,ball.r*k,0,TAU);ctx.fill()}
+
  ctx.globalAlpha=invuln>0&&Math.floor(clock*14)%2?.35:1;
- const g=ctx.createRadialGradient(ball.x-3,y-4,1,ball.x,y,ball.r*1.3);g.addColorStop(0,"#fff");g.addColorStop(.3,c);g.addColorStop(1,"rgba(10,10,40,.9)");
- ctx.shadowColor=c;ctx.shadowBlur=fx?24:0;ctx.fillStyle=g;ctx.beginPath();ctx.arc(ball.x,y,ball.r,0,TAU);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1}
+
+ ctx.shadowColor=c;ctx.shadowBlur=fx?16:0;ctx.fillStyle=c;ctx.beginPath();ctx.arc(ball.x,y,ball.r,0,TAU);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1}
 function draw(){ctx.setTransform(dpr,0,0,dpr,0,0);
  const hue=(228+score*1.5)%360,g=ctx.createRadialGradient(w/2,h*.35,10,w/2,h*.5,Math.max(w,h)*.85);
  g.addColorStop(0,"hsl("+hue+",55%,13%)");g.addColorStop(1,"hsl("+((hue+30)%360)+",70%,3.5%)");ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
