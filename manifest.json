@@ -21,5 +21,9 @@
       "type": "image/png",
       "purpose": "any"
     }
+  ],
+  "id": "./",
+  "categories": [
+    "games"
   ]
 }

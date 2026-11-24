@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#05060f">
 <meta name="description" content="ORYVEX, a premium neon color arcade challenge.">
-<title>ORYVEX</title>
+<title>ORYVEX — Neon Color Arcade</title>
+<meta property="og:type" content="website"><meta property="og:title" content="ORYVEX — Find your color"><meta property="og:description" content="One-tap neon color arcade. Free, no install. Can you beat my score?"><meta property="og:image" content="logo.png"><meta name="twitter:card" content="summary">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -33,7 +34,7 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
 .wm .o{position:relative;display:inline-block;flex:none;width:.76em;height:.76em;margin-right:.32em}
 .wm .o i{position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--c1) 0 25%,var(--c2) 0 50%,var(--c3) 0 75%,var(--c4) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - .11em),#000 calc(100% - .1em));mask:radial-gradient(farthest-side,transparent calc(100% - .11em),#000 calc(100% - .1em));animation:spin 8s linear infinite}
 .wm .o b{position:absolute;left:50%;top:50%;width:.19em;height:.19em;margin:-.095em;border-radius:50%;background:var(--c1);box-shadow:0 0 .4em var(--c1)}
-.wm .rest{background:linear-gradient(100deg,#8d9ac0 0%,#fff 38%,var(--gold) 50%,#fff 62%,#8d9ac0 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+.wm .rest{color:#fff;text-shadow:0 0 18px rgba(140,19,251,.55),0 0 2px rgba(255,255,255,.4)}
 .rule{display:flex;align-items:center;gap:12px;margin:14px 0 20px;font-size:9px;letter-spacing:.34em;color:var(--gold);font-weight:600}
 .rule::before,.rule::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(232,211,163,.55))}
 .rule::after{transform:scaleX(-1)}
@@ -64,8 +65,10 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
 .stats3>div+div{border-left:1px solid var(--line)}
 .stats3 span{display:block;font-size:8px;letter-spacing:.3em;color:var(--mute);font-weight:600;margin-bottom:5px}
 .stats3 b{font-size:15px;font-weight:500}
-.over-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
-.over-actions .ghost{padding:0 14px}
+.over-actions{display:grid;grid-template-columns:1fr auto auto;gap:8px;margin-top:10px}
+.over-actions .ghost{padding:0 12px;letter-spacing:.16em}
+#gameOverScreen{background:linear-gradient(180deg,rgba(3,4,12,.9),rgba(3,4,12,.96))}
+.icon svg{display:block;margin:auto}
 .setting{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 2px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;color:#dbe4ff}
 .setting input{-webkit-appearance:none;appearance:none;position:relative;flex:none;width:44px;height:26px;margin:0;border-radius:13px;background:rgba(255,255,255,.12);transition:background .2s;cursor:pointer}
 .setting input::before{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
@@ -114,9 +117,9 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
         </div>
         <div id="modeNote" class="note"></div>
         <div class="dock">
-          <button id="settingsBtn" class="icon" aria-label="Settings">⚙</button>
+          <button id="settingsBtn" class="icon" aria-label="Settings"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></button>
           <button id="helpBtn" class="icon" aria-label="Help">?</button>
-          <button id="dailyBtn" class="icon" aria-label="Daily reward">✦</button>
+          <button id="dailyBtn" class="icon" aria-label="Daily reward"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2l2.6 6.9L22 12l-7.4 3.1L12 22l-2.6-6.9L2 12l7.4-3.1z"/></svg></button>
         </div>
         <div id="dailyNote" class="note"></div>
       </div>
@@ -151,6 +154,7 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
         <button id="restartBtn" class="play-btn" style="margin-top:12px">PLAY AGAIN</button>
         <div class="over-actions">
           <button id="continueBtn" class="ghost">CONTINUE · 5 ✦</button>
+          <button id="shareBtn" class="ghost" aria-label="Share score">SHARE</button>
           <button id="gameOverHomeBtn" class="ghost" aria-label="Home">HOME</button>
         </div>
       </div>
@@ -214,7 +218,7 @@ function refreshHome(){$("homeBest").textContent=best[mode];$("bank").textConten
 /* ---------- layout ---------- */
 function resize(){dpr=Math.min(window.devicePixelRatio||1,2);w=window.innerWidth;h=window.innerHeight;cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
  bg=[];for(let i=0;i<70;i++)bg.push({x:Math.random()*w,y:Math.random()*h,r:rand(.7,2),a:rand(.25,.85),l:[.08,.16,.3][i%3]});
- if(ball){ball.x=w/2;ball.hy=h*.7;for(const o of obstacles)o.x=w/2;camY=Math.min(camY,ball.y-h*.58)}else if(state==="start")menuDemo()}
+ if(ball){ball.x=w/2;ball.hy=h*.7;for(const o of obstacles)o.x=w/2;for(const c of items)c.x=w/2;camY=Math.min(camY,ball.y-h*.58)}else if(state==="start")menuDemo()}
 function menuDemo(){obstacles=[];items=[];[[.1,.18,40],[.93,.46,48],[.08,.82,44],[.9,.1,28]].forEach(([fx_,fy,R],i)=>{const o=mk("ring",0);o.x=w*fx_;o.y=h*fy;o.R=R;o.ext=R+6;o.dir=i%2?1:-1;obstacles.push(o)});camY=0}
 
 /* ---------- obstacles ---------- */
@@ -261,7 +265,7 @@ function jump(){if(state!=="playing")return;if(!started){started=true;$("tapHint
 function countUp(el,to){const t0=performance.now(),d=Math.min(900,250+to*40);el.textContent=0;const f=n=>{const k=clamp((n-t0)/d,0,1);if(k<1&&state==="over"){el.textContent=Math.round(to*(1-Math.pow(1-k,3)));requestAnimationFrame(f)}else el.textContent=to};requestAnimationFrame(f)}
 function gauge(){const pct=best[mode]?clamp(score/best[mode],0,1):0,a=$("gaugeArc");a.style.transition="none";a.style.strokeDashoffset="100";void a.getBoundingClientRect();a.style.transition="stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)";a.style.strokeDashoffset=String(100-pct*100);countUp($("finalScore"),score)}
 function endRun(){const nb=score>best[mode];if(nb){best[mode]=score;store.set("oryvexBest_"+mode,score)}
- $("bestScore").textContent=best[mode];$("overLevel").textContent=lvl;$("overMode").textContent=mode.toUpperCase();$("newBest").classList.toggle("hidden",!(nb&&score>0));$("earned").textContent="+"+runStars+" ✦ earned · "+bank+" ✦ saved";
+ $("bestScore").textContent=best[mode];$("overLevel").textContent=lvl;$("overMode").textContent=mode.toUpperCase();$("newBest").classList.toggle("hidden",!(nb&&score>0));$("earned").textContent="+"+runStars+" ✦ this run  ·  "+bank+" ✦ in wallet";
  const cb=$("continueBtn");cb.disabled=continueUsed||bank<5;cb.textContent=continueUsed?"CONTINUE USED":bank<5?"CONTINUE · NEED 5 ✦":"CONTINUE · 5 ✦";
  setState("over");gauge()}
 function hurt(){if(state!=="playing")return;if(invuln>0)return;lives--;burst(ball.x,ball.y,COLORS[ball.color],28);shake=10;flash=.3;buzz(90);tone(180,.35,"sawtooth",.07,50);updateHud();
@@ -320,9 +324,9 @@ function draw(){ctx.setTransform(dpr,0,0,dpr,0,0);const hue=mod(hueCur,360);
  ctx.fillStyle="#bcd4ff";for(const s of bg){ctx.globalAlpha=s.a*(.65+.35*Math.sin(clock*2+s.x));ctx.fillRect(s.x,mod(s.y-camY*s.l,h),s.r,s.r)}ctx.globalAlpha=1;
  const vg=ctx.createRadialGradient(w/2,h/2,Math.min(w,h)*.35,w/2,h/2,Math.max(w,h)*.8);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,0,0,.5)");ctx.fillStyle=vg;ctx.fillRect(0,0,w,h);
  if(shake>.1)ctx.translate(rand(-shake,shake),rand(-shake,shake));
- if(!ball)ctx.globalAlpha=.2;
+ const live=state==="playing"||state==="paused";if(!live)ctx.globalAlpha=state==="over"?.07:.2;
  for(const o of obstacles)drawObstacle(o);ctx.globalAlpha=1;
- if(ball){for(const c of items)drawItem(c);drawBall()}
+ if(ball&&live){for(const c of items)drawItem(c);drawBall()}
  for(const a of waves){ctx.globalAlpha=clamp(a.life/.45,0,1);ctx.strokeStyle=a.c;ctx.lineWidth=2;ctx.beginPath();ctx.arc(a.x,a.y-camY,a.r,0,TAU);ctx.stroke()}
  for(const p of parts){ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y-camY,p.r,0,TAU);ctx.fill()}
  ctx.globalAlpha=1;ctx.font="600 15px system-ui,sans-serif";ctx.textAlign="center";
@@ -339,6 +343,7 @@ function loop(now){const dt=Math.min((now-last)/1000||0,.05);last=now;clock+=dt;
 cv.addEventListener("pointerdown",e=>{e.preventDefault();jump()},{passive:false});
 addEventListener("keydown",e=>{
  if(["Space","ArrowUp","KeyW"].includes(e.code)){if(state==="playing"){e.preventDefault();jump()}else if(state==="start"&&!(document.activeElement&&document.activeElement.tagName==="BUTTON")&&!$("settingsScreen").offsetParent&&!$("helpScreen").offsetParent){e.preventDefault();startGame()}}
+ if(e.code==="Enter"&&state==="over"&&!(document.activeElement&&document.activeElement.tagName==="BUTTON")){startGame();return}
  if((e.code==="Escape"||e.code==="KeyP")&&state==="playing")pause();else if((e.code==="Escape"||e.code==="KeyP")&&state==="paused")resume()});
 const on=(id,fn)=>$(id).addEventListener("click",fn);
 on("playBtn",startGame);on("restartBtn",startGame);on("pauseRestartBtn",startGame);on("pauseBtn",pause);on("resumeBtn",resume);
@@ -346,6 +351,7 @@ on("pauseHomeBtn",goHome);on("gameOverHomeBtn",goHome);
 on("continueBtn",()=>{if(state!=="over"||continueUsed||bank<5)return;bank-=5;store.set("oryvexBank",bank);continueUsed=true;
  const ty=camY+h*.62;obstacles=obstacles.filter(o=>Math.abs(o.y-ty)>o.ext+190);items=items.filter(c=>Math.abs(c.y-ty)>150);
  ball.y=ty;ball.vy=-JUMP;lives=Math.max(1,lives);invuln=1.4;started=true;updateHud();setState("playing");toast("5 ✦ SPENT. KEEP GOING");last=performance.now()});
+on("shareBtn",async()=>{const t="I scored "+score+" in ORYVEX ("+mode.toUpperCase()+"). Can you beat me?",u=location.href.split("#")[0];try{if(navigator.share)await navigator.share({title:"ORYVEX",text:t,url:u});else{await navigator.clipboard.writeText(t+" "+u);toast("COPIED. PASTE TO SHARE")}}catch(e){}});
 on("settingsBtn",()=>show("settingsScreen"));on("helpBtn",()=>show("helpScreen"));on("settingsBackBtn",()=>show("startScreen"));on("helpBackBtn",()=>show("startScreen"));
 $("soundToggle").checked=soundOn;$("vibrationToggle").checked=vibOn;$("reduceToggle").checked=reduce;
 $("soundToggle").onchange=e=>{soundOn=e.target.checked;store.set("oryvexSound",soundOn)};
