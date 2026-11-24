@@ -42,3 +42,18 @@ button:active{transform:scale(.98)}
 .toast{position:absolute;z-index:5;left:50%;bottom:12%;transform:translate(-50%,12px);opacity:0;pointer-events:none;padding:10px 16px;border-radius:30px;background:#121a3c;border:1px solid #7e8dce66;font-size:12px;transition:.25s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-height:700px){.start-card{padding:12px 18px}.brand-logo{width:105px}h1{font-size:43px}.tagline{margin:5px 0 12px}.primary{height:48px;margin-bottom:10px}.menu-row{margin-top:10px}.panel{padding:22px}}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,input:focus-visible{outline:2px solid #00dfff;outline-offset:2px}
+.chips{display:flex;gap:10px;justify-content:center;margin:0 0 14px}
+.chip{flex:1;max-width:130px;padding:9px 6px;border-radius:14px;background:#101936;border:1px solid #46548655}
+.chip span{display:block;font-size:9px;letter-spacing:.2em;font-weight:800;color:#9ba9d7;margin-bottom:3px}
+.chip b{font-size:19px}
+.badge{display:inline-block;margin:-10px 0 4px;padding:5px 14px;border-radius:99px;background:linear-gradient(100deg,#FFD400,#FF2E7E);color:#1a1030;font-weight:900;font-size:11px;letter-spacing:.18em}
+.secondary.done{opacity:.55}
+.setting span{padding-right:14px;font-size:14px}
+.tap-hint{position:absolute;z-index:2;left:50%;top:58%;transform:translateX(-50%);font-size:12px;font-weight:800;letter-spacing:.3em;color:#cfe0ff;animation:pulse 1.2s ease-in-out infinite;pointer-events:none}
+@keyframes pulse{50%{opacity:.35}}
+.hud span#hudLives{color:#FF2E7E;letter-spacing:.1em}
+.hud span#hudLives:empty{display:none}
+@media(prefers-reduced-motion:reduce){.tap-hint{animation:none}}
+@media(max-height:700px){.chips{margin-bottom:8px}.chip{padding:6px}}
