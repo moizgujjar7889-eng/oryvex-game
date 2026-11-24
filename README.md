@@ -1,30 +1,113 @@
+<div align="center">
+
+<img src="logo.png" width="120" alt="ORYVEX logo">
+
 # ORYVEX
 
-A pure HTML5 Canvas + vanilla JavaScript mobile arcade game.
+### Find your color. Break the orbit.
+
+A fast, neon, one-tap arcade game that runs in your browser and installs like a real app.
+Pure **HTML5 Canvas + vanilla JavaScript** — no frameworks, no ads, no downloads.
+
+[![Play Now](https://img.shields.io/badge/▶_PLAY_NOW-8C13FB?style=for-the-badge)](https://moizgujjar7889-eng.github.io/)
+![PWA](https://img.shields.io/badge/PWA-installable-32DBF0?style=for-the-badge)
+![Offline](https://img.shields.io/badge/works-offline-F6DF0E?style=for-the-badge)
+![No ads](https://img.shields.io/badge/ads-none-FF0181?style=for-the-badge)
+
+</div>
+
+---
+
+## How to play
+
+Tap to bounce your ball upward. Gravity pulls it back down. You can only pass through the parts of an obstacle that **match your ball's color** — touch any other color and the run ends.
+
+- Grab **✦ stars** to score points and fill your wallet.
+- Hit the **four-color orb** to change your ball's color.
+- Every **5 obstacles** = a new level with new shapes and faster spins.
+
+## Game modes
+
+| Mode | What it is |
+|------|-----------|
+| **Classic** | One life. The pure neon climb. |
+| **Infinity** | Three lives. A wrong color costs a life, not the run. |
+| **Hard** | Faster spins, tighter gaps. One life. |
+| **Daily** | Same course for everyone today. Come back every day for streak rewards. |
+
+## Features
+
+- 4 game modes with separate best scores
+- 16 collectible ball skins and 9 trails, bought with stars
+- 11 achievements with star rewards
+- Daily reward with a 7-day streak
+- Global leaderboard (Firebase, optional)
+- Original synth music and sound effects, with **separate music and sound volume sliders**
+- Vibration is **off by default** and can be switched on in Settings
+- Sharp, clean graphics on every screen (scales with your phone's pixel density, up to 3x)
+- "Reduce effects" option for older phones
+- Save backup: export and import your progress with a code
+- Installable PWA — add to Home Screen and play offline
+
+## Controls
+
+| Device | Action |
+|--------|--------|
+| Phone | Tap anywhere |
+| PC | Click, `Space`, `↑` or `W` |
+| Pause | `Esc` or `P` |
+
+## Install on your phone
+
+1. Open the game link in Chrome (Android) or Safari (iPhone).
+2. **Android:** tap the menu → **Install app**. **iPhone:** tap Share → **Add to Home Screen**.
+3. Play from your home screen, even offline.
+
+> **Music not starting?** Browsers only allow sound after your first tap. Tap once anywhere and the music begins. Check that **Music** is on and the volume sliders are up in ⚙ Settings.
 
 ## Run locally
-Serve this folder with a local web server (PWA service workers do not work from `file://`):
-- Python: `python -m http.server 8000`
-- Open `http://localhost:8000`
 
-## Logo and icons
-`logo.png` is the supplied 1254×1254 logo and is used on the title screen.
-`icon-192.png` and `icon-512.png` are resized versions for PWA installation.
+PWA service workers need a web server (they don't work from `file://`):
 
-To regenerate icon sizes from logo.png with ImageMagick:
-```sh
+```bash
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000`.
+
+## Deploy on GitHub Pages
+
+1. Create a repository (for example `oryvex-game`).
+2. Upload **all files in this folder** to the repository root (not the ZIP itself).
+3. Settings → Pages → **Deploy from a branch** → `main` / `(root)` → Save.
+4. Open the Pages URL on your phone and install it.
+
+> After uploading a new version, bump the `CACHE` name in `service-worker.js` (e.g. `oryvex-v16`) so players get the update.
+
+## Leaderboard setup
+
+See [SETUP.md](SETUP.md) for the Firebase Firestore rules and key restrictions.
+
+## Project files
+
+| File | Purpose |
+|------|---------|
+| `index.html` | Game, styles and logic |
+| `service-worker.js` | Offline support and caching |
+| `manifest.json` | PWA install info |
+| `logo.png`, `icon-*.png`, `favicon*`, `og-image.png` | Branding and icons |
+
+## Regenerate icons
+
+```bash
 magick logo.png -resize 192x192 icon-192.png
 magick logo.png -resize 512x512 icon-512.png
 ```
 
-## GitHub Pages
-1. Create a new GitHub repository, e.g. `oryvex-game`.
-2. Upload all files in this folder to the repository root (not the ZIP itself).
-3. Commit to the `main` branch.
-4. Open Settings → Pages.
-5. Under Build and deployment, choose “Deploy from a branch”.
-6. Choose `main` and `/ (root)`, then Save.
-7. Wait for the Pages URL to appear and open it on your phone.
-8. Use your browser's “Add to Home Screen” / “Install app” option.
+---
 
-GitHub Pages serves over HTTPS, which enables PWA installation and service workers.
+<div align="center">
+
+**Made with ♥ — tap, match, climb.**
+
+</div>
