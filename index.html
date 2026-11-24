@@ -74,6 +74,7 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
 .over-actions .ghost{padding:0 12px;letter-spacing:.16em}
 #gameOverScreen{background:linear-gradient(180deg,rgba(3,4,12,.9),rgba(3,4,12,.96))}
 .icon svg{display:block;margin:auto}
+.vol{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 2px;border-bottom:1px solid var(--line);font-size:13px;color:#dbe4ff}.vol input{flex:1;max-width:58%;accent-color:#7c9cff}
 .setting{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 2px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;color:#dbe4ff}
 .setting input{-webkit-appearance:none;appearance:none;position:relative;flex:none;width:44px;height:26px;margin:0;border-radius:13px;background:rgba(255,255,255,.12);transition:background .2s;cursor:pointer}
 .setting input::before{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
@@ -155,6 +156,7 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
 #rotate img{width:64px;height:64px;border-radius:22%}
 @media(orientation:landscape) and (max-height:500px) and (pointer:coarse){#rotate{display:flex}}
 @media(max-height:560px){.gauge{width:min(34vh,150px)}.wm{font-size:28px}.help p{margin:6px 0;font-size:12px}}
+.dock{gap:8px}.seg{grid-template-columns:repeat(4,1fr)}.seg .mode{letter-spacing:.08em;font-size:9px}.board small{display:block;font-size:10px;color:var(--mute)}.row.got{color:var(--gold)}
 </style>
 </head>
 <body>
@@ -173,6 +175,7 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
           <button class="mode active" data-mode="classic">CLASSIC</button>
           <button class="mode" data-mode="infinity">INFINITY</button>
           <button class="mode" data-mode="hard">HARD</button>
+          <button class="mode" data-mode="daily">DAILY</button>
         </div>
         <div id="modeNote" class="note"></div>
         <div class="dock">
@@ -180,6 +183,7 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
           <button id="helpBtn" class="icon" aria-label="Help">?</button>
           <button id="dailyBtn" class="icon" aria-label="Daily reward"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2l2.6 6.9L22 12l-7.4 3.1L12 22l-2.6-6.9L2 12l7.4-3.1z"/></svg></button>
           <button id="shopBtn" class="icon" aria-label="Collection"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/></svg></button>
+          <button id="achBtn" class="icon" aria-label="Achievements"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 21h8"/></svg></button>
           <button id="boardBtn" class="icon" aria-label="Leaderboard"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 21V11M12 21V4M19 21V14"/></svg></button>
         </div>
         <div id="dailyNote" class="note"></div>
@@ -227,8 +231,11 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
         <div class="eyebrow">PREFERENCES</div><h2>SETTINGS</h2>
         <label class="setting"><span>Sound effects</span><input id="soundToggle" type="checkbox" checked></label>
         <label class="setting"><span>Music</span><input id="musicToggle" type="checkbox" checked></label>
+        <div class="vol"><span>Sound volume</span><input id="sfxVol" type="range" min="0" max="100"></div>
+        <div class="vol"><span>Music volume</span><input id="musVol" type="range" min="0" max="100"></div>
         <label class="setting"><span>Vibration</span><input id="vibrationToggle" type="checkbox" checked></label>
         <label class="setting"><span>Reduce effects<br><small style="color:var(--mute)">Smoother on older phones</small></span><input id="reduceToggle" type="checkbox"></label>
+        <div class="grid2" style="margin-top:12px"><button id="expBtn" class="opt">EXPORT SAVE</button><button id="impBtn" class="opt">IMPORT SAVE</button></div>
         <button id="settingsBackBtn" class="play-btn">DONE</button>
       </div>
     </section>
@@ -240,7 +247,7 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
         <p>Pass only through parts that match your ball's color. Touch another color and the run ends.</p>
         <p>Collect <b>stars</b> for points. The <b>four-color orb</b> changes your color.</p>
         <p>Every 5 obstacles is a new level with new shapes and faster spins.</p>
-        <p>Spend 5 ✦ to continue once per run. <b>Infinity</b> gives you 3 lives. <b>Hard</b> is faster and tighter.</p>
+        <p>Spend 5 ✦ to continue once per run. <b>Infinity</b> gives you 3 lives. <b>Hard</b> is faster and tighter. <b>Daily</b> is one shared course for everyone today.</p>
         <button id="helpBackBtn" class="play-btn">GOT IT</button>
       </div>
     </section>
@@ -253,6 +260,8 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
       <button id="boardBackBtn" class="play-btn">DONE</button></div></section>
     <section id="dailyScreen" class="screen hidden"><div class="card sheet"><div class="eyebrow">COME BACK EVERY DAY</div><h2>DAILY STREAK</h2>
       <div id="streakGrid" class="grid7"></div><button id="claimBtn" class="play-btn">CLAIM</button></div></section>
+    <section id="achScreen" class="screen hidden"><div class="card sheet"><div class="eyebrow" id="achCount"></div><h2>ACHIEVEMENTS</h2><div id="achList" class="board"></div><button id="achBackBtn" class="play-btn">DONE</button></div></section>
+    <div id="tut" class="tap-hint hidden" style="top:84%;color:#fff;font-size:9px;letter-spacing:.2em"></div>
     <button id="pauseBtn" class="hud-pause hidden" aria-label="Pause"><i></i><i></i></button>
     <div id="hud" class="hud hidden"><strong id="hudScore">0</strong><span id="hudMode" class="lvl">LEVEL 1</span><span id="hudLives"></span></div>
     <div id="tapHint" class="tap-hint hidden">TAP TO JUMP</div>
@@ -264,8 +273,11 @@ const $=id=>document.getElementById(id),cv=$("game"),ctx=cv.getContext("2d");
 const COLORS=["#32DBF0","#F6DF0E","#8C13FB","#FF0181"],TAU=Math.PI*2,HALF=Math.PI/2,G=1500,JUMP=380;
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),mod=(a,n)=>((a%n)+n)%n,pick=a=>a[Math.floor(Math.random()*a.length)];
 const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const MODES={classic:{lives:1,speed:1,gap:1},infinity:{lives:3,speed:.85,gap:1.1},hard:{lives:1,speed:1.35,gap:.8}};
-const NOTES={classic:"One life. The pure neon climb.",infinity:"Three lives. A wrong color costs a life, not the run.",hard:"Faster spins and tighter gaps. One life."};
+const MODES={classic:{lives:1,speed:1,gap:1},infinity:{lives:3,speed:.85,gap:1.1},hard:{lives:1,speed:1.35,gap:.8},daily:{lives:1,speed:1,gap:1}};
+const NOTES={classic:"One life. The pure neon climb.",infinity:"Three lives. A wrong color costs a life, not the run.",hard:"Faster spins and tighter gaps. One life.",daily:"Same course for everyone today. One life."};
+let sr=Math.random;const srand=(a,b)=>a+sr()*(b-a),spick=a=>a[Math.floor(sr()*a.length)];
+const mulberry=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296},hash=str=>{let x=2166136261;for(const c of str)x=Math.imul(x^c.charCodeAt(0),16777619);return x};
+let tutOn=store.get("oryvexTut","0")!=="1",tutT=0;
 let w=0,h=0,dpr=1,last=0,clock=0,slow=false,pf={t:0,n:0};
 let mode=store.get("oryvexMode","classic");if(!MODES[mode])mode="classic";
 let state="start",score=0,runStars=0,lives=1,invuln=0,started=false,continueUsed=false,shake=0,camY=0,edge=0,lastType="",count=0,lvl=1,passedN=0,hueCur=228;
@@ -276,40 +288,65 @@ for(const m in MODES)best[m]=+store.get("oryvexBest_"+m,m==="classic"?store.get(
 let soundOn=store.get("oryvexSound","true")!=="false",vibOn=store.get("oryvexVibration","true")!=="false",ac=null,toastT=0;
 
 /* ---------- helpers: audio, haptics, ui ---------- */
-function tone(f,d=.09,type="sine",v=.05,to){if(!soundOn)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+let sfxVol=+store.get("oryvexSfxVol",.9),musVol=+store.get("oryvexMusVol",.8),sfxG=null,musG=null;if(isNaN(sfxVol))sfxVol=.9;if(isNaN(musVol))musVol=.8;
+function applyVol(){if(sfxG)sfxG.gain.value=sfxVol*2.4;if(musG)musG.gain.value=musVol*3.2}
+function mkAc(){const a=new(window.AudioContext||window.webkitAudioContext)(),c=a.createDynamicsCompressor();c.threshold.value=-16;c.knee.value=20;c.ratio.value=5;c.attack.value=.004;c.release.value=.2;c.connect(a.destination);sfxG=a.createGain();musG=a.createGain();sfxG.connect(c);musG.connect(c);applyVol();return a}
+function tone(f,d=.09,type="sine",v=.05,to){if(!soundOn)return;try{ac=ac||mkAc()();if(ac.state==="suspended")ac.resume();const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(sfxG);o.start(t);o.stop(t+d+.02)}catch(e){}}
 const buzz=ms=>{if(vibOn&&navigator.vibrate)try{navigator.vibrate(ms)}catch(e){}};
-const today=()=>{const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()};
+const nowMs=()=>{const l=+store.get("oryvexSeen",0)||0,n=Date.now();if(n>l)store.set("oryvexSeen",n);return Math.max(n,l)};
+const today=()=>{const d=new Date(nowMs());return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()};
 function toast(m){const el=$("toast");el.textContent=m;el.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),1800)}
-function show(id){["startScreen","pauseScreen","gameOverScreen","settingsScreen","helpScreen","shopScreen","boardScreen","dailyScreen"].forEach(s=>$(s).classList.toggle("hidden",s!==id))}
+function show(id){["startScreen","pauseScreen","gameOverScreen","settingsScreen","helpScreen","shopScreen","boardScreen","dailyScreen","achScreen"].forEach(s=>$(s).classList.toggle("hidden",s!==id))}
 function setState(s){state=s;const p=s==="playing";$("hud").classList.toggle("hidden",!p);$("pauseBtn").classList.toggle("hidden",!p);$("tapHint").classList.toggle("hidden",!(p&&!started));show({start:"startScreen",paused:"pauseScreen",over:"gameOverScreen"}[s]||"")}
 function updateHud(){const m=MODES[mode],el=$("hudScore");if(el.textContent!==String(score)){el.textContent=score;el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump")}
  $("hudMode").textContent="LEVEL "+lvl;$("hudLives").textContent=m.lives>1?"●".repeat(Math.max(0,lives))+"○".repeat(Math.max(0,m.lives-lives)):""}
 function refreshHome(){$("homeBest").textContent=best[mode];$("bank").textContent=bank;$("modeNote").textContent=NOTES[mode];document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));const c=store.get("oryvexDaily","")===today();$("dailyBtn").classList.toggle("done",c);$("dailyBtn").classList.toggle("ready",!c);$("dailyNote").textContent=c?"Daily reward claimed. Come back tomorrow.":"Daily reward ready: +"+REW[streakNow()%7]+" ✦"}
 
 /* ---------- collection, streak, leaderboard, music ---------- */
-const SKINS=[["orb","ORB",0],["ring","RING",15],["diamond","DIAMOND",30],["hex","HEX",50]],TRAILS=[["none","NONE",0],["glow","GLOW",10],["dots","DOTS",25],["comet","COMET",40]];
+const SKINS=[["orb","ORB",0],["ring","RING",15],["diamond","DIAMOND",30],["square","SQUARE",35],["tri","TRIANGLE",35],["star","STAR",40],["heart","HEART",45],["hex","HEX",50],["plus","CROSS",55],["bolt","BOLT",70],["flower","FLOWER",80],["gem","GEM",90],["smiley","SMILEY",100],["bullseye","TARGET",120],["beach","BEACH BALL",140],["eye","EYE",180]],TRAILS=[["none","NONE",0],["glow","GLOW",10],["dots","DOTS",25],["line","LINE",30],["comet","COMET",40],["spark","SPARK",45],["bubbles","BUBBLES",55],["rainbow","RAINBOW",70],["stars","STARS",85]];
 let owned;try{owned=JSON.parse(store.get("oryvexOwned",'["orb","none"]'))}catch(e){owned=["orb","none"]}
+let stats;try{stats=JSON.parse(store.get("oryvexStats","{}"))||{}}catch(e){stats={}}stats.runs=stats.runs||0;stats.stars=stats.stars||0;stats.daily=stats.daily||0;const saveStats=()=>store.set("oryvexStats",JSON.stringify(stats));
+let ach;try{ach=JSON.parse(store.get("oryvexAch","{}"))||{}}catch(e){ach={}}
+const ACH=[["a1","FIRST FLIGHT","Finish your first run",5,s=>s.runs>=1],["a2","STAR HUNTER","30 stars in one run",20,s=>runStars>=30],["a3","SCORE 25","Score 25 in one run",10,s=>score>=25],["a4","SCORE 50","Score 50 in one run",25,s=>score>=50],["a5","LEVEL 5","Reach level 5",15,s=>lvl>=5],["a6","COLLECTOR","100 stars in total",20,s=>s.stars>=100],["a7","REGULAR","Play 25 runs",15,s=>s.runs>=25],["a8","HARD NERVES","Score 15 in Hard",25,s=>mode==="hard"&&score>=15],["a9","NINE LIVES","Score 20 in Infinity",20,s=>mode==="infinity"&&score>=20],["a10","DAILY PLAYER","Play the Daily challenge",10,s=>s.daily>=1],["a11","WEEK STREAK","Reach a 7 day streak",30,s=>(+store.get("oryvexStreak",0)||0)>=7]];
+function checkAch(){for(const[i,n,d,r,t]of ACH)if(!ach[i]&&t(stats)){ach[i]=1;store.set("oryvexAch",JSON.stringify(ach));bank+=r;store.set("oryvexBank",bank);toast("\u{1F3C6} "+n+"  +"+r+" \u2726")}}
+function renderAch(){const el=$("achList");el.innerHTML="";let c=0;for(const[i,n,d,r]of ACH){const g=ach[i];if(g)c++;const row=document.createElement("div");row.className="row"+(g?" got":"");row.innerHTML="<span>"+n+"<small>"+d+"</small></span><b>"+(g?"\u2713":"+"+r+" \u2726")+"</b>";el.appendChild(row)}$("achCount").textContent=c+" / "+ACH.length+" UNLOCKED"}
 let skin=store.get("oryvexSkin","orb"),trail=store.get("oryvexTrail","none");
 function renderShop(){$("shopBank").textContent=bank;[["skinList",SKINS,"skin"],["trailList",TRAILS,"trail"]].forEach(([id,L,k])=>{const el=$(id);el.innerHTML="";L.forEach(([i,n,c])=>{const b=document.createElement("button"),has=owned.includes(i),sel=(k==="skin"?skin:trail)===i;b.className="opt"+(sel?" on":"");b.innerHTML=n+"<small>"+(sel?"EQUIPPED":has?"OWNED":c+" ✦")+"</small>";
  b.onclick=()=>{if(!has){if(bank<c){toast("NEED "+c+" ✦");return}bank-=c;store.set("oryvexBank",bank);owned.push(i);store.set("oryvexOwned",JSON.stringify(owned))}if(k==="skin"){skin=i;store.set("oryvexSkin",i)}else{trail=i;store.set("oryvexTrail",i)}renderShop();refreshHome()};el.appendChild(b)})})}
-const ymd=d=>d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(),yest=()=>{const d=new Date();d.setDate(d.getDate()-1);return ymd(d)},REW=[10,10,15,15,20,20,50];
+const ymd=d=>d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(),yest=()=>{const d=new Date(nowMs());d.setDate(d.getDate()-1);return ymd(d)},REW=[10,10,15,15,20,20,50];
+if(store.get("oryvexBestDay","")!==today()){best.daily=0;store.set("oryvexBest_daily",0);store.set("oryvexBestDay",today())}
 function streakNow(){const l=store.get("oryvexDaily","");return l===today()||l===yest()?(+store.get("oryvexStreak",0)||0):0}
 function renderDaily(){const s=streakNow(),c=store.get("oryvexDaily","")===today(),dn=c?((s-1)%7)+1:s%7,g=$("streakGrid");g.innerHTML="";REW.forEach((r,i)=>{const d=document.createElement("div");d.className="day"+(i<dn?" done":"")+(!c&&i===dn?" now":"");d.innerHTML="DAY "+(i+1)+"<b>"+r+"</b>";g.appendChild(d)});$("claimBtn").textContent=c?"BACK":"CLAIM +"+REW[s%7]+" ✦"}
 const FB={projectId:"oryvex-37064",apiKey:"AIzaSyD24eU2KmjUhXqh25lTWs1IK-4BxqDSdeE"};/* paste your Firebase values here, see SETUP.md */
+const lbc=m=>"lb_"+(m==="daily"?"daily_"+today():m);
 const fbOn=()=>FB.projectId&&FB.apiKey,fbU=p=>"https://firestore.googleapis.com/v1/projects/"+FB.projectId+"/databases/(default)/documents"+p;
 let uid=store.get("oryvexUid","");if(!uid){uid=Math.random().toString(36).slice(2,12)+Date.now().toString(36);store.set("oryvexUid",uid)}
 let pname=store.get("oryvexName","");
-async function submitScore(m,sc){if(!fbOn()||sc<1)return;try{await fetch(fbU("/lb_"+m+"/"+uid+"?key="+FB.apiKey+"&updateMask.fieldPaths=name&updateMask.fieldPaths=score"),{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{name:{stringValue:pname||"Player"},score:{integerValue:String(sc)}}})})}catch(e){}}
+async function submitScore(m,sc){if(!fbOn()||sc<1)return;try{await fetch(fbU("/"+lbc(m)+"/"+uid+"?key="+FB.apiKey+"&updateMask.fieldPaths=name&updateMask.fieldPaths=score"),{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{name:{stringValue:pname||"Player"},score:{integerValue:String(sc)}}})})}catch(e){}}
 async function loadBoard(){const el=$("boardList");$("boardMode").textContent=mode.toUpperCase()+" ▾";$("nameInput").value=pname;if(!fbOn()){el.textContent="Leaderboard is not connected yet.";return}el.textContent="Loading…";
- try{const r=await fetch(fbU(":runQuery?key="+FB.apiKey),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({structuredQuery:{from:[{collectionId:"lb_"+mode}],orderBy:[{field:{fieldPath:"score"},direction:"DESCENDING"}],limit:20}})}),d=(await r.json()).filter(x=>x.document);el.innerHTML="";if(!d.length){el.textContent="No scores yet. Be the first.";return}
+ try{const r=await fetch(fbU(":runQuery?key="+FB.apiKey),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({structuredQuery:{from:[{collectionId:lbc(mode)}],orderBy:[{field:{fieldPath:"score"},direction:"DESCENDING"}],limit:20}})}),d=(await r.json()).filter(x=>x.document);el.innerHTML="";if(!d.length){el.textContent="No scores yet. Be the first.";return}
  d.forEach((x,i)=>{const f=x.document.fields,row=document.createElement("div"),a=document.createElement("span"),b=document.createElement("b");row.className="row"+(x.document.name.split("/").pop()===uid?" me":"");a.textContent=(i+1)+".  "+(f.name?f.name.stringValue:"Player");b.textContent=f.score.integerValue;row.append(a,b);el.appendChild(row)})}catch(e){el.textContent="Could not load. Check your connection."}}
-let musicOn=store.get("oryvexMusic","true")!=="false",mi=0;const SEQ=[220,261.63,329.63,392,329.63,261.63,293.66,349.23];
-document.addEventListener("pointerdown",()=>{try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}catch(e){}},{passive:true});
-setInterval(()=>{if(!musicOn||!ac||ac.state!=="running"||document.hidden)return;try{const t=ac.currentTime,f=SEQ[mi%8]*(mi%32<16?1:1.125),o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.022,t+.08);g.gain.exponentialRampToValueAtTime(.0001,t+1.4);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+1.5);
- if(mi%8===0){const b=ac.createOscillator(),q=ac.createGain();b.type="triangle";b.frequency.value=f/2;q.gain.setValueAtTime(.0001,t);q.gain.linearRampToValueAtTime(.03,t+.3);q.gain.exponentialRampToValueAtTime(.0001,t+3.4);b.connect(q);q.connect(ac.destination);b.start(t);b.stop(t+3.5)}mi++}catch(e){}},520);
+let musicOn=store.get("oryvexMusic","true")!=="false",mi=0;const PROG=[[220,261.63,329.63],[174.61,220,261.63],[261.63,329.63,392],[196,246.94,293.66]],ARP=[0,1,2,1,2,1,0,2],PENT=[440,493.88,587.33,659.25,783.99];
+const MUSIC_FILE="";/* optional: put a CC0 mp3 next to index.html, write its name here (e.g. "music.mp3") and add it to ASSETS in service-worker.js */let mAud=null;
+document.addEventListener("pointerdown",()=>{try{ac=ac||mkAc()();if(ac.state==="suspended")ac.resume()}catch(e){}},{passive:true});
+function tn(f,t,a,pk,len,type){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(pk,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+len);o.connect(g);g.connect(musG);o.start(t);o.stop(t+len+.1)}
+function musicTick(){try{if(MUSIC_FILE){mAud=mAud||Object.assign(new Audio(MUSIC_FILE),{loop:true,volume:.4});const on=musicOn&&!document.hidden;if(on&&mAud.paused)mAud.play().catch(()=>{});else if(!on&&!mAud.paused)mAud.pause()}
+ else if(musicOn&&ac&&ac.state==="running"&&!document.hidden){const t=ac.currentTime,ch=PROG[Math.floor(mi/8)%4],f=ch[ARP[mi%8]]*(mi%64<32?1:2);tn(f,t,.08,.022,1.4,"sine");if(mi%8===0)tn(ch[0]/2,t,.3,.03,3.4,"triangle");if(mi%8===4&&Math.random()<.6)tn(pick(PENT),t,.05,.014,1,"triangle");mi++}}catch(e){}setTimeout(musicTick,520-Math.min(lvl,10)*16)}
+musicTick();
+const poly=(n,a,b,rot)=>{const m=b?n*2:n;for(let i=0;i<m;i++){const g=(rot===undefined?-HALF:rot)+i*TAU/m,q=b&&i%2?b:a;ctx.lineTo(Math.cos(g)*q,Math.sin(g)*q)}},pl=(r,p)=>p.forEach(([x,y])=>ctx.lineTo(x*r,y*r));
+const SH={diamond:r=>pl(r,[[0,-1.25],[1,0],[0,1.25],[-1,0]]),hex:r=>poly(6,r*1.08,0,0),gem:r=>poly(8,r*1.15,0,Math.PI/8),star:r=>poly(5,r*1.4,r*.58),tri:r=>poly(3,r*1.35),square:r=>poly(4,r*1.3,0,Math.PI/4),plus:r=>pl(r,[[-.45,-1.2],[.45,-1.2],[.45,-.45],[1.2,-.45],[1.2,.45],[.45,.45],[.45,1.2],[-.45,1.2],[-.45,.45],[-1.2,.45],[-1.2,-.45],[-.45,-.45]]),bolt:r=>pl(r,[[.25,-1.4],[-.85,.15],[-.05,.15],[-.3,1.4],[.85,-.2],[.05,-.2]]),heart:r=>{ctx.moveTo(0,r*.95);ctx.bezierCurveTo(-r*1.8,-r*.1,-r*.8,-r*1.6,0,-r*.5);ctx.bezierCurveTo(r*.8,-r*1.6,r*1.8,-r*.1,0,r*.95)},flower:r=>{for(let i=0;i<6;i++){const g=i*TAU/6,x=Math.cos(g)*r*.62,y=Math.sin(g)*r*.62;ctx.moveTo(x+r*.5,y);ctx.arc(x,y,r*.5,0,TAU)}ctx.moveTo(r*.6,0);ctx.arc(0,0,r*.6,0,TAU)}};
 function ballShape(r){ctx.beginPath();if(skin==="ring"){ctx.lineWidth=4;ctx.arc(0,0,r-2,0,TAU);ctx.stroke();return}
- if(skin==="diamond"){ctx.moveTo(0,-r*1.25);ctx.lineTo(r,0);ctx.lineTo(0,r*1.25);ctx.lineTo(-r,0)}else if(skin==="hex"){for(let i=0;i<6;i++){const a=i*TAU/6;ctx.lineTo(Math.cos(a)*r*1.08,Math.sin(a)*r*1.08)}}else ctx.arc(0,0,r,0,TAU);ctx.closePath();ctx.fill()}
-function drawTrail(c){if(trail==="none"||ball.trail.length<2)return;const T=ball.trail,n=T.length;ctx.save();ctx.fillStyle=c;for(let i=0;i<n;i++){if(trail==="dots"&&i%2)continue;const k=i/n;ctx.globalAlpha=k*(trail==="glow"?.28:.5);ctx.beginPath();ctx.arc(T[i].x,T[i].y-camY,ball.r*(trail==="dots"?.35:trail==="comet"?k:k*.9),0,TAU);ctx.fill()}ctx.restore()}
+ if(SH[skin])SH[skin](r);else ctx.arc(0,0,r,0,TAU);ctx.closePath();ctx.fill()}
+function ballDet(r){const d="rgba(0,0,0,.55)";ctx.lineWidth=2;ctx.strokeStyle=d;ctx.fillStyle=d;
+ if(skin==="smiley"){ctx.beginPath();ctx.arc(-r*.35,-r*.22,r*.14,0,TAU);ctx.arc(r*.35,-r*.22,r*.14,0,TAU);ctx.fill();ctx.beginPath();ctx.arc(0,r*.05,r*.5,.25,Math.PI-.25);ctx.stroke()}
+ else if(skin==="bullseye"){for(const k of[.65,.3]){ctx.beginPath();ctx.arc(0,0,r*k,0,TAU);ctx.stroke()}}
+ else if(skin==="beach"){ctx.strokeStyle="rgba(255,255,255,.6)";ctx.lineWidth=2.4;for(let i=0;i<3;i++){const g=i*Math.PI/3;ctx.beginPath();ctx.moveTo(Math.cos(g)*r,Math.sin(g)*r);ctx.lineTo(-Math.cos(g)*r,-Math.sin(g)*r);ctx.stroke()}}
+ else if(skin==="eye"){ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,0,r*.62,0,TAU);ctx.fill();ctx.fillStyle="#05060f";ctx.beginPath();ctx.arc(0,0,r*.3,0,TAU);ctx.fill()}}
+function drawTrail(c){if(trail==="none"||ball.trail.length<2)return;const T=ball.trail,n=T.length;ctx.save();ctx.fillStyle=c;ctx.strokeStyle=c;
+ if(trail==="line"){ctx.lineCap="round";for(let i=1;i<n;i++){ctx.globalAlpha=i/n*.7;ctx.lineWidth=ball.r*1.4*i/n;ctx.beginPath();ctx.moveTo(T[i-1].x,T[i-1].y-camY);ctx.lineTo(T[i].x,T[i].y-camY);ctx.stroke()}ctx.restore();return}
+ ctx.textAlign="center";ctx.lineWidth=1.6;for(let i=0;i<n;i++){if(trail==="dots"&&i%2)continue;const k=i/n,x=T[i].x,y=T[i].y-camY,q=ball.r*k;ctx.globalAlpha=k*(trail==="glow"?.28:.5);if(trail==="rainbow")ctx.fillStyle=COLORS[i%4];
+  if(trail==="bubbles"){ctx.beginPath();ctx.arc(x+Math.sin(i*2)*4,y,q*.8,0,TAU);ctx.stroke()}else if(trail==="spark")ctx.fillRect(x-q*.4,y-q*.4,q*.8,q*.8);else if(trail==="stars"){ctx.font=(q*2+2)+"px system-ui";ctx.fillText("\u2726",x,y+q*.6)}
+  else{ctx.beginPath();ctx.arc(x,y,trail==="dots"?ball.r*.35:trail==="comet"?q:q*.9,0,TAU);ctx.fill()}}ctx.restore()}
 let dip=null;const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone;
 addEventListener("beforeinstallprompt",e=>{e.preventDefault();dip=e;$("installBtn").classList.remove("hidden")});
 if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!standalone)$("installBtn").classList.remove("hidden");
@@ -325,19 +362,20 @@ function menuDemo(){obstacles=[];items=[];[[.1,.18,40],[.93,.46,48],[.08,.82,44]
 
 /* ---------- obstacles ---------- */
 function mk(type,level){const R=clamp(w*.145,40,56),m=MODES[mode];
- const o={type,x:w/2,y:0,R,th:11,rot:rand(0,TAU),dir:Math.random()<.5?-1:1,off:Math.floor(rand(0,4)),spd:(.8+Math.min(level,18)*.06)*m.speed,scroll:rand(0,500),scroll2:rand(0,500),passed:false};
+ const o={type,x:w/2,y:0,R,th:11,rot:srand(0,TAU),dir:sr()<.5?-1:1,off:Math.floor(srand(0,4)),spd:(.8+Math.min(level,18)*.06)*m.speed,scroll:srand(0,500),scroll2:srand(0,500),passed:false};
  if(type==="bars"||type==="bars2")o.th=12;
- o.ext={ring:R+7,double:R*1.05+6,windmill:R*1.1+6,square:R*1.05+6,triangle:R*1.15+6,bars:9,triple:R*1.15+8,bars2:23}[type];return o}
-function spawn(){const n=count++,lv=Math.floor(n/5)+1,level=lv-1,ORDER=["ring","double","windmill","bars","square","triangle","triple","bars2"],types=ORDER.slice(0,Math.min(ORDER.length,lv));
- let type=pick(types);if(lv>1&&Math.random()<.4)type=types[types.length-1];if(type===lastType&&types.length>1)type=pick(types);lastType=type;
- const o=mk(type,level),gap=(n===0?50:rand(110,150))*MODES[mode].gap*clamp(1-level*.018,.72,1),prevEdge=edge;
+ o.ext={ring:R+7,double:R*1.05+6,windmill:R*1.1+6,square:R*1.05+6,triangle:R*1.15+6,bars:9,triple:R*1.15+8,bars2:23,pentagon:R*1.15+6,hexagon:R*1.2+6}[type];return o}
+function spawn(){const n=count++,lv=Math.floor(n/5)+1,level=lv-1,ORDER=["ring","double","windmill","bars","square","triangle","triple","bars2","pentagon","hexagon"],types=ORDER.slice(0,Math.min(ORDER.length,lv));
+ let type=spick(types);if(lv>1&&sr()<.4)type=types[types.length-1];if(type===lastType&&types.length>1)type=spick(types);lastType=type;
+ const o=mk(type,level),gap=(n===0?50:srand(110,150))*MODES[mode].gap*clamp(1-level*.018,.72,1),prevEdge=edge;
  o.y=edge-gap-o.ext;edge=o.y-o.ext;obstacles.push(o);
  items.push({type:"star",x:w/2,y:(type==="bars"||type==="bars2")?o.y-34:o.y,r:8,taken:false});
- if(n>=2&&Math.random()<.35)items.push({type:"orb",x:w/2,y:(prevEdge+o.y+o.ext)/2,r:10,taken:false})}
+ if(n>=2&&sr()<.35)items.push({type:"orb",x:w/2,y:(prevEdge+o.y+o.ext)/2,r:10,taken:false})}
 function ringsOf(o){if(o.type==="triple")return[{r:o.R*1.15,rot:o.rot,off:o.off},{r:o.R*.85,rot:-o.rot*1.3+Math.PI/4,off:o.off+2},{r:o.R*.55,rot:o.rot*1.6,off:o.off+1}];if(o.type==="double"){const r=o.R*1.05;return[{r,rot:o.rot,off:o.off},{r:r*.62,rot:-o.rot+Math.PI/4,off:o.off+2}]}return[{r:o.R,rot:o.rot,off:o.off}]}
+const SIDES={square:4,triangle:3,pentagon:5,hexagon:6};
 function segsOf(o){const s=[],x=o.x,y=o.y,R=o.R;
  if(o.type==="windmill")for(let i=0;i<4;i++){const a=o.rot+i*HALF,L=R*1.1;s.push({x1:x,y1:y,x2:x+Math.cos(a)*L,y2:y+Math.sin(a)*L,c:mod(i+o.off,4)})}
- else if(o.type==="square"||o.type==="triangle"){const n=o.type==="square"?4:3,rr=o.type==="square"?R*1.05:R*1.15,p=[];for(let i=0;i<n;i++){const a=o.rot+i*TAU/n-HALF;p.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr])}for(let i=0;i<n;i++){const q=p[(i+1)%n];s.push({x1:p[i][0],y1:p[i][1],x2:q[0],y2:q[1],c:mod(i+o.off,4)})}}
+ else if(SIDES[o.type]){const n=SIDES[o.type],rr=R*(o.type==="square"?1.05:o.type==="hexagon"?1.2:1.15),p=[];for(let i=0;i<n;i++){const a=o.rot+i*TAU/n-HALF;p.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr])}for(let i=0;i<n;i++){const q=p[(i+1)%n];s.push({x1:p[i][0],y1:p[i][1],x2:q[0],y2:q[1],c:mod(i+o.off,4)})}}
  return s}
 const colorAt=(a,off)=>mod(Math.floor(mod(a,TAU)/HALF)+off,4);
 const colorAtX=(o,x,sc=o.scroll,off=o.off)=>mod(Math.floor((x-sc)/(w*.3))+off,4);
@@ -359,14 +397,14 @@ function fxUpdate(dt){for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=380*
  if(ball&&state==="playing"){ball.trail.push({x:ball.x,y:ball.y});if(ball.trail.length>12)ball.trail.shift()}}
 
 /* ---------- game flow ---------- */
-function startGame(){ball={x:w/2,y:h*.7,hy:h*.7,vy:0,r:9,color:Math.floor(Math.random()*4),trail:[]};
+function startGame(){sr=mode==="daily"?mulberry(hash(today())):Math.random;if(mode==="daily"){stats.daily++;saveStats()}tutT=0;ball={x:w/2,y:h*.7,hy:h*.7,vy:0,r:9,color:Math.floor(sr()*4),trail:[]};
  camY=0;obstacles=[];items=[];parts=[];waves=[];texts=[];score=0;runStars=0;lives=MODES[mode].lives;invuln=0;started=false;continueUsed=false;lastType="";count=0;lvl=1;passedN=0;hueCur=228;banner=null;flash=0;edge=ball.y-130;
  updateHud();setState("playing");last=performance.now()}
 function goHome(){ball=null;menuDemo();setState("start");refreshHome()}
 function jump(){if(state!=="playing")return;if(!started){started=true;$("tapHint").classList.add("hidden")}ball.vy=-JUMP;tone(520,.07,"triangle",.04,700)}
 function countUp(el,to){const t0=performance.now(),d=Math.min(900,250+to*40);el.textContent=0;const f=n=>{const k=clamp((n-t0)/d,0,1);if(k<1&&state==="over"){el.textContent=Math.round(to*(1-Math.pow(1-k,3)));requestAnimationFrame(f)}else el.textContent=to};requestAnimationFrame(f)}
 function gauge(){const pct=best[mode]?clamp(score/best[mode],0,1):0,a=$("gaugeArc");a.style.transition="none";a.style.strokeDashoffset="100";void a.getBoundingClientRect();a.style.transition="stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)";a.style.strokeDashoffset=String(100-pct*100);countUp($("finalScore"),score)}
-function endRun(){const nb=score>best[mode];if(nb){best[mode]=score;store.set("oryvexBest_"+mode,score);submitScore(mode,score)}
+function endRun(){stats.runs++;saveStats();checkAch();const nb=score>best[mode];if(nb){best[mode]=score;store.set("oryvexBest_"+mode,score);submitScore(mode,score)}
  $("bestScore").textContent=best[mode];$("overLevel").textContent=lvl;$("overMode").textContent=mode.toUpperCase();$("newBest").classList.toggle("hidden",!(nb&&score>0));$("earned").textContent="+"+runStars+" ✦ this run  ·  "+bank+" ✦ in wallet";
  const cb=$("continueBtn");cb.disabled=continueUsed||bank<5;cb.textContent=continueUsed?"CONTINUE USED":bank<5?"CONTINUE · NEED 5 ✦":"CONTINUE · 5 ✦";
  setState("over");gauge()}
@@ -375,7 +413,7 @@ function hurt(){if(state!=="playing")return;if(invuln>0)return;lives--;burst(bal
 function fell(){invuln=0;hurt();if(state==="playing"){ball.y=camY+h*.65;ball.vy=-JUMP}}
 function switchColor(c){let n=Math.floor(Math.random()*3);if(n>=ball.color)n++;ball.color=n;burst(c.x,c.y,COLORS[n],18);wave(c.x,c.y,COLORS[n]);tone(660,.16,"sine",.05,1100);buzz(12)}
 function collect(){for(const c of items){if(c.taken)continue;if(Math.hypot(ball.x-c.x,ball.y-c.y)<ball.r+c.r+4){c.taken=true;
-  if(c.type==="star"){score++;runStars++;bank++;store.set("oryvexBank",bank);burst(c.x,c.y,"#ffffff",10);wave(c.x,c.y,"#ffffff");pop("+1",c.x,c.y,"#fff");tone(980,.08,"sine",.04,1500);buzz(8)}else switchColor(c);updateHud()}}}
+  if(c.type==="star"){score++;runStars++;bank++;store.set("oryvexBank",bank);stats.stars++;saveStats();checkAch();burst(c.x,c.y,"#ffffff",10);wave(c.x,c.y,"#ffffff");pop("+1",c.x,c.y,"#fff");tone(980,.08,"sine",.04,1500);buzz(8)}else switchColor(c);updateHud()}}}
 function phys(sd){for(const o of obstacles){o.rot+=o.dir*o.spd*sd;if(o.type==="bars"||o.type==="bars2"){o.scroll=mod(o.scroll+o.dir*o.spd*70*sd,w*1.2);o.scroll2=mod(o.scroll2-o.dir*o.spd*70*sd,w*1.2)}}
  if(!started){ball.y=ball.hy+Math.sin(clock*3)*4;return}
  ball.vy=Math.min(ball.vy+G*sd,1000);ball.y+=ball.vy*sd;
@@ -384,12 +422,14 @@ function phys(sd){for(const o of obstacles){o.rot+=o.dir*o.spd*sd;if(o.type==="b
  invuln=Math.max(0,invuln-sd);
  for(const o of obstacles){
   if(invuln<=0&&Math.abs(ball.y-o.y)<o.ext+ball.r+2&&hits(o)){hurt();if(state!=="playing")return}
-  if(!o.passed&&ball.y<o.y-o.ext){o.passed=true;passedN++;tone(420+Math.min(passedN,40)*8,.05,"triangle",.025);const nl=Math.floor(passedN/5)+1;if(nl>lvl){lvl=nl;updateHud();banner={t:"LEVEL "+lvl,life:1.7};wave(ball.x,ball.y,"#ffffff");tone(660,.14,"triangle",.05,990);buzz(15)}}}
+  if(!o.passed&&ball.y<o.y-o.ext){o.passed=true;passedN++;tone(420+Math.min(passedN,40)*8,.05,"triangle",.025);const nl=Math.floor(passedN/5)+1;if(nl>lvl){lvl=nl;updateHud();checkAch();banner={t:"LEVEL "+lvl,life:1.7};wave(ball.x,ball.y,"#ffffff");tone(660,.14,"triangle",.05,990);buzz(15)}}}
  collect()}
 function stepWorld(dt){const n=Math.min(6,Math.ceil(dt/.011));for(let i=0;i<n&&state==="playing";i++)phys(dt/n);
  if(state!=="playing")return;
  while(edge>camY-h*.6)spawn();
  obstacles=obstacles.filter(o=>o.y-camY<h+260);items=items.filter(c=>!c.taken&&c.y-camY<h+140)}
+function tutStep(dt){const el=$("tut");if(!tutOn||state!=="playing"||!started){el.classList.add("hidden");return}tutT+=dt;const m=tutT<2?"KEEP TAPPING TO STAY UP":tutT<3.8?"PASS ONLY YOUR OWN COLOR":tutT<5.6?"GRAB \u2726 STARS \u00B7 ORB CHANGES COLOR":"";
+ if(!m){tutOn=false;store.set("oryvexTut","1");el.classList.add("hidden");return}if(el.textContent!==m)el.textContent=m;el.classList.remove("hidden")}
 function pause(){if(state!=="playing")return;setState("paused")}
 function resume(){if(state!=="paused")return;setState("playing");last=performance.now()}
 
@@ -416,7 +456,7 @@ function drawItem(c){const y=c.y-camY;if(y<-30||y>h+30)return;ctx.save();ctx.tra
  ctx.restore()}
 function drawBall(){const y=ball.y-camY,c=COLORS[ball.color],k=clamp(Math.abs(ball.vy)/3000,0,.22);
  drawTrail(c);ctx.globalAlpha=invuln>0&&Math.floor(clock*14)%2?.35:1;ctx.save();ctx.translate(ball.x,y);ctx.scale(1-k*.5,1+k);
- ctx.shadowColor=c;ctx.shadowBlur=fx?14:0;ctx.fillStyle=c;ctx.strokeStyle=c;ballShape(ball.r);ctx.shadowBlur=0;
+ ctx.shadowColor=c;ctx.shadowBlur=fx?14:0;ctx.fillStyle=c;ctx.strokeStyle=c;ballShape(ball.r);ctx.shadowBlur=0;ballDet(ball.r);
  ctx.fillStyle="rgba(255,255,255,.3)";ctx.beginPath();ctx.ellipse(-ball.r*.3,-ball.r*.4,ball.r*.38,ball.r*.22,-.5,0,TAU);ctx.fill();
  ctx.restore();ctx.globalAlpha=1}
 function draw(){ctx.setTransform(dpr,0,0,dpr,0,0);const hue=hueCur;
@@ -439,7 +479,7 @@ function draw(){ctx.setTransform(dpr,0,0,dpr,0,0);const hue=hueCur;
 function loop(now){const dt=Math.min((now-last)/1000||0,.05);last=now;clock+=dt;hueCur+=((228+(lvl-1)*28)-hueCur)*Math.min(1,dt*1.5);
  if(++pf.n>0)pf.t+=dt;if(pf.n===90){if(pf.t/90>.026){slow=true;document.documentElement.classList.add("lite")}pf.t=pf.n=0;fx=!reduce&&!slow}
  if(state==="playing")stepWorld(dt);else if(state==="start")for(const o of obstacles)o.rot+=o.dir*.4*dt;
- fxUpdate(dt);draw();requestAnimationFrame(loop)}
+ tutStep(dt);fxUpdate(dt);draw();requestAnimationFrame(loop)}
 
 /* ---------- input & buttons ---------- */
 cv.addEventListener("pointerdown",e=>{e.preventDefault();jump()},{passive:false});
@@ -466,12 +506,16 @@ $("reduceToggle").onchange=e=>{reduce=e.target.checked;fx=!reduce&&!slow;documen
 document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;store.set("oryvexMode",mode);refreshHome()});
 on("dailyBtn",()=>{renderDaily();show("dailyScreen")});
 on("claimBtn",()=>{if(store.get("oryvexDaily","")!==today()){const s=streakNow(),r=REW[s%7];store.set("oryvexStreak",s+1);store.set("oryvexDaily",today());bank+=r;store.set("oryvexBank",bank);toast("+"+r+" ✦ DAILY REWARD");buzz(15)}show("startScreen");refreshHome()});
+on("achBtn",()=>{renderAch();show("achScreen")});on("achBackBtn",()=>show("startScreen"));
+on("expBtn",async()=>{const o={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith("oryvex"))o[k]=localStorage.getItem(k)}}catch(e){}const c="OV1."+btoa(unescape(encodeURIComponent(JSON.stringify(o))));try{await navigator.clipboard.writeText(c);toast("SAVE CODE COPIED")}catch(e){prompt("Copy your save code:",c)}});
+on("impBtn",()=>{const c=prompt("Paste save code:");if(!c)return;if(!c.startsWith("OV1."))return toast("INVALID CODE");try{const o=JSON.parse(decodeURIComponent(escape(atob(c.slice(4)))));for(const k in o)if(k.startsWith("oryvex")&&typeof o[k]==="string")store.set(k,o[k]);toast("SAVE LOADED");setTimeout(()=>location.reload(),700)}catch(e){toast("INVALID CODE")}});
 on("shopBtn",()=>{renderShop();show("shopScreen")});on("shopBackBtn",()=>{show("startScreen");refreshHome()});
 on("boardBtn",()=>{show("boardScreen");loadBoard()});on("boardBackBtn",()=>show("startScreen"));
-on("boardMode",()=>{const k=Object.keys(MODES);mode=k[(k.indexOf(mode)+1)%3];store.set("oryvexMode",mode);refreshHome();loadBoard()});
+on("boardMode",()=>{const k=Object.keys(MODES);mode=k[(k.indexOf(mode)+1)%k.length];store.set("oryvexMode",mode);refreshHome();loadBoard()});
 $("nameInput").onchange=e=>{pname=e.target.value.trim().slice(0,12);store.set("oryvexName",pname);if(best[mode]>0)submitScore(mode,best[mode])};
 on("installBtn",async()=>{if(dip){dip.prompt();await dip.userChoice;dip=null;$("installBtn").classList.add("hidden")}else toast("TAP SHARE, THEN ADD TO HOME SCREEN")});
 $("musicToggle").checked=musicOn;$("musicToggle").onchange=e=>{musicOn=e.target.checked;store.set("oryvexMusic",musicOn)};
+$("sfxVol").value=Math.round(sfxVol*100);$("musVol").value=Math.round(musVol*100);$("sfxVol").oninput=e=>{sfxVol=e.target.value/100;store.set("oryvexSfxVol",sfxVol);applyVol()};$("sfxVol").onchange=()=>tone(660,.12,"sine",.05);$("musVol").oninput=e=>{musVol=e.target.value/100;store.set("oryvexMusVol",musVol);applyVol()};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});addEventListener("blur",pause);
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("button"))tone(340,.05,"sine",.03,260)});
 addEventListener("resize",resize);
