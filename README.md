@@ -42,9 +42,10 @@ Tap to bounce your ball upward. Gravity pulls it back down. You can only pass th
 - 11 achievements with star rewards
 - Daily reward with a 7-day streak
 - Global leaderboard (Firebase, optional)
-- Original synth music and sound effects, with **separate music and sound volume sliders**
+- Original synth music (rendered once into a light loop, so the game stays smooth) and sound effects, on **separate music and sound buses with their own volume sliders**
+- **Every color has its own sound**: touching blue, yellow, purple or pink plays a different note
 - Vibration is **off by default** and can be switched on in Settings
-- Sharp, clean graphics on every screen (scales with your phone's pixel density, up to 3x)
+- Sharp, clean graphics on every screen (scales with your phone's pixel density, up to 2x; drops to 1.5x on slow phones)
 - "Reduce effects" option for older phones
 - Save backup: export and import your progress with a code
 - Installable PWA — add to Home Screen and play offline
@@ -82,7 +83,7 @@ Then open `http://localhost:8000`.
 3. Settings → Pages → **Deploy from a branch** → `main` / `(root)` → Save.
 4. Open the Pages URL on your phone and install it.
 
-> After uploading a new version, bump the `CACHE` name in `service-worker.js` (e.g. `oryvex-v16`) so players get the update.
+> After uploading a new version, bump the `CACHE` name in `service-worker.js` (e.g. `oryvex-v17`) so players get the update.
 
 ## Leaderboard setup
 
