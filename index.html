@@ -4,18 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#05060f">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="ORYVEX"><meta name="format-detection" content="telephone=no">
 <meta name="description" content="ORYVEX, a premium neon color arcade challenge.">
 <title>ORYVEX — Neon Color Arcade</title>
-<meta property="og:type" content="website"><meta property="og:title" content="ORYVEX — Find your color"><meta property="og:description" content="One-tap neon color arcade. Free, no install. Can you beat my score?"><meta property="og:image" content="logo.png"><meta name="twitter:card" content="summary">
+<meta property="og:type" content="website"><meta property="og:url" content="https://moizgujjar7889-eng.github.io/oryvex-game/"><link rel="canonical" href="https://moizgujjar7889-eng.github.io/oryvex-game/"><meta property="og:title" content="ORYVEX — Find your color"><meta property="og:description" content="One-tap neon color arcade. Free, no install. Can you beat my score?"><meta property="og:image" content="https://moizgujjar7889-eng.github.io/oryvex-game/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://moizgujjar7889-eng.github.io/oryvex-game/og-image.png">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 *{box-sizing:border-box}
 :root{--c1:#32DBF0;--c2:#F6DF0E;--c3:#8C13FB;--c4:#FF0181;--gold:#e8d3a3;--mute:#8d96b8;--line:rgba(255,255,255,.1);--ink:#eef2ff}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05060f;color:var(--ink);font-family:"Avenir Next","SF Pro Display","Segoe UI",Roboto,system-ui,sans-serif;font-weight:400;overscroll-behavior:none}
-body{touch-action:none;-webkit-user-select:none;user-select:none}
-#app{position:relative;width:100%;height:100%;height:100dvh;overflow:hidden;background:#05060f}
+body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;display:flex;justify-content:center;background:radial-gradient(60% 50% at 20% 15%,rgba(50,219,240,.10),transparent 70%),radial-gradient(60% 50% at 85% 90%,rgba(255,1,129,.10),transparent 70%),radial-gradient(50% 50% at 80% 20%,rgba(140,19,251,.10),transparent 70%),#05060f}
+img{-webkit-user-drag:none;user-select:none}
+#app{position:relative;flex:none;width:min(100%,520px,calc(100vh*.62));width:min(100%,520px,calc(100dvh*.62));height:100%;height:100dvh;overflow:hidden;background:#05060f}
+@media(min-width:600px) and (hover:hover){#app{box-shadow:0 0 0 1px rgba(255,255,255,.07),0 0 90px rgba(140,19,251,.22),0 0 40px rgba(50,219,240,.10)}}
 canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .hidden{display:none!important}
 .screen{position:absolute;inset:0;display:flex;padding:max(20px,env(safe-area-inset-top)) 22px max(20px,env(safe-area-inset-bottom));z-index:3;overflow-y:auto;background:linear-gradient(180deg,rgba(3,4,12,.35),rgba(3,4,12,.78))}
@@ -29,7 +34,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--c1);outline-off
 h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-left:.3em}
 .topbar{display:flex;justify-content:space-between;margin-bottom:14px;font-size:9px;letter-spacing:.26em;color:var(--mute);font-weight:600}
 .topbar b{margin-left:7px;color:#fff;font-size:15px;letter-spacing:0;font-weight:500}
-.logo{display:block;width:88px;height:88px;margin:0 auto;border-radius:23px;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 14px 40px rgba(140,19,251,.22);animation:float 5s ease-in-out infinite}
+.logo{display:block;width:clamp(72px,12vh,104px);height:auto;aspect-ratio:1;margin:0 auto;border-radius:22%;object-fit:cover;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 14px 40px rgba(140,19,251,.22);animation:float 5s ease-in-out infinite}
 .wm{display:flex;align-items:center;justify-content:center;margin:20px 0 0;padding-left:.3em;font-size:clamp(32px,9.5vw,42px);font-weight:300;letter-spacing:.3em;line-height:1}
 .wm .o{position:relative;display:inline-block;flex:none;width:.76em;height:.76em;margin-right:.32em}
 .wm .o i{position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--c1) 0 25%,var(--c2) 0 50%,var(--c3) 0 75%,var(--c4) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - .11em),#000 calc(100% - .1em));mask:radial-gradient(farthest-side,transparent calc(100% - .11em),#000 calc(100% - .1em));animation:spin 8s linear infinite}
@@ -95,7 +100,7 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
 @keyframes float{50%{transform:translateY(-5px)}}
 @keyframes shine{from{background-position:130% 0}to{background-position:-130% 0}}
 @keyframes bump{40%{transform:scale(1.22)}}
-@media(max-height:700px){.logo{width:68px;height:68px;border-radius:18px}.wm{margin-top:14px}.rule{margin:10px 0 14px}.topbar{margin-bottom:8px}.play-btn{height:50px}}
+@media(max-height:700px){.logo{width:68px}.wm{margin-top:14px}.rule{margin:10px 0 14px}.topbar{margin-bottom:8px}.play-btn{height:50px}}
 @media(prefers-reduced-motion:reduce){.logo,.wm .o i,.wm .rest,.icon.ready::after,.tap-hint{animation:none}}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .opt{height:48px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:#cdd5f0;font-size:10px;letter-spacing:.16em;font-weight:600}
@@ -135,16 +140,32 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
 @keyframes sweep{0%,60%{left:-60%}100%{left:130%}}
 @media(max-width:360px){.screen{padding-left:14px;padding-right:14px}.sheet{padding:18px 14px}h2{letter-spacing:.22em}.over-actions .ghost{letter-spacing:.1em;font-size:9px}}
 @media(prefers-reduced-motion:reduce){.screen,.play-btn::after{animation:none}}
+
+/* ===== mobile + PC fit ===== */
+.hud-pause{width:44px;height:44px;right:14px}
+.mode{min-height:44px}
+.opt,.ghost,.pill{min-height:44px}
+.day{min-width:0}
+.screen{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
+.screen input{touch-action:manipulation}
+@media(hover:hover){.play-btn:hover{box-shadow:0 0 44px rgba(140,19,251,.5),0 0 16px rgba(50,219,240,.3)}.icon:hover,.ghost:hover,.round:hover,.opt:hover,.pill:hover,.mode:hover,.hud-pause:hover{background:rgba(255,255,255,.12);color:#fff}}
+.lite .sheet,.lite .toast,.lite .mode.active,.lite .icon,.lite .ghost,.lite .round,.lite .opt,.lite .pill{-webkit-backdrop-filter:none;backdrop-filter:none}
+.lite .play-btn::after,.lite .logo{animation:none}
+#rotate{display:none;position:fixed;inset:0;z-index:99;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#05060f;color:var(--gold);font-size:13px;letter-spacing:.3em;text-align:center;padding:20px}
+#rotate img{width:64px;height:64px;border-radius:22%}
+@media(orientation:landscape) and (max-height:500px) and (pointer:coarse){#rotate{display:flex}}
+@media(max-height:560px){.gauge{width:min(34vh,150px)}.wm{font-size:28px}.help p{margin:6px 0;font-size:12px}}
 </style>
 </head>
 <body>
+  <div id="rotate"><img src="icon-192.png" alt=""><span>ROTATE YOUR PHONE<br>TO PLAY</span></div>
   <main id="app">
     <canvas id="game" aria-label="ORYVEX arcade game"></canvas>
 
     <section id="startScreen" class="screen">
       <div class="card">
         <div class="topbar"><span>BEST<b id="homeBest">0</b></span><span>STARS<b>✦ <span id="bank">0</span></b></span></div>
-        <img class="logo" src="logo.png" alt="ORYVEX logo" width="88" height="88">
+        <img class="logo" src="logo.png" alt="ORYVEX logo" width="104" height="104" decoding="async">
         <h1 class="wm" aria-label="ORYVEX" style="margin-bottom:0;font-weight:300"><span class="o" aria-hidden="true"><i></i><b></b></span><span class="rest">RYVEX</span></h1>
         <div class="rule">FIND YOUR COLOR</div>
         <button id="playBtn" class="play-btn">PLAY</button>
@@ -295,9 +316,11 @@ if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!standalone)$("installBtn").cl
 addEventListener("appinstalled",()=>$("installBtn").classList.add("hidden"));
 
 /* ---------- layout ---------- */
-function resize(){dpr=Math.min(window.devicePixelRatio||1,2);w=window.innerWidth;h=window.innerHeight;cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
+function resize(){dpr=Math.min(window.devicePixelRatio||1,2);const ap=$("app");w=ap.clientWidth||window.innerWidth;h=ap.clientHeight||window.innerHeight;cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
  bg=[];for(let i=0;i<70;i++)bg.push({x:Math.random()*w,y:Math.random()*h,r:rand(.7,2),a:rand(.25,.85),l:[.08,.16,.3][i%3]});
- if(ball){ball.x=w/2;ball.hy=h*.7;for(const o of obstacles)o.x=w/2;for(const c of items)c.x=w/2;camY=Math.min(camY,ball.y-h*.58)}else if(state==="start")menuDemo()}
+ if(ball){ball.x=w/2;ball.hy=h*.7;for(const o of obstacles)o.x=w/2;for(const c of items)c.x=w/2;camY=Math.min(camY,ball.y-h*.58)}else if(state==="start")menuDemo();
+ if(isLandscapePhone())pause()}
+function isLandscapePhone(){return window.innerWidth>window.innerHeight&&window.innerHeight<500&&matchMedia("(pointer:coarse)").matches}
 function menuDemo(){obstacles=[];items=[];[[.1,.18,40],[.93,.46,48],[.08,.82,44],[.9,.1,28]].forEach(([fx_,fy,R],i)=>{const o=mk("ring",0);o.x=w*fx_;o.y=h*fy;o.R=R;o.ext=R+6;o.dir=i%2?1:-1;obstacles.push(o)});camY=0}
 
 /* ---------- obstacles ---------- */
@@ -414,12 +437,16 @@ function draw(){ctx.setTransform(dpr,0,0,dpr,0,0);const hue=hueCur;
  if(flash>0){ctx.fillStyle="rgba(255,255,255,"+(flash*.5)+")";ctx.fillRect(0,0,w,h)}
  if(banner){const k=banner.life,a=clamp(Math.min(k/.5,(1.7-k)/.2),0,1);ctx.save();ctx.globalAlpha=a;ctx.textAlign="center";ctx.fillStyle="#fff";ctx.shadowColor="rgba(255,255,255,.5)";ctx.shadowBlur=fx?18:0;ctx.font="200 34px system-ui,sans-serif";if("letterSpacing" in ctx)ctx.letterSpacing="12px";ctx.fillText(banner.t,w/2+6,h*.3-(1.7-k)*14);ctx.restore()}}
 function loop(now){const dt=Math.min((now-last)/1000||0,.05);last=now;clock+=dt;hueCur+=((228+(lvl-1)*28)-hueCur)*Math.min(1,dt*1.5);
- if(++pf.n>0)pf.t+=dt;if(pf.n===90){if(pf.t/90>.026)slow=true;pf.t=pf.n=0;fx=!reduce&&!slow}
+ if(++pf.n>0)pf.t+=dt;if(pf.n===90){if(pf.t/90>.026){slow=true;document.documentElement.classList.add("lite")}pf.t=pf.n=0;fx=!reduce&&!slow}
  if(state==="playing")stepWorld(dt);else if(state==="start")for(const o of obstacles)o.rot+=o.dir*.4*dt;
  fxUpdate(dt);draw();requestAnimationFrame(loop)}
 
 /* ---------- input & buttons ---------- */
 cv.addEventListener("pointerdown",e=>{e.preventDefault();jump()},{passive:false});
+/* PC: clicking the empty side area also jumps */
+document.body.addEventListener("pointerdown",e=>{if(e.target===document.body&&state==="playing"){e.preventDefault();jump()}},{passive:false});
+document.addEventListener("contextmenu",e=>{if(e.target.closest&&!e.target.closest("input"))e.preventDefault()});
+document.documentElement.classList.toggle("lite",reduce);
 addEventListener("keydown",e=>{
  if(["Space","ArrowUp","KeyW"].includes(e.code)){if(state==="playing"){e.preventDefault();jump()}else if(state==="start"&&!(document.activeElement&&document.activeElement.tagName==="BUTTON")&&!$("settingsScreen").offsetParent&&!$("helpScreen").offsetParent){e.preventDefault();startGame()}}
  if(e.code==="Enter"&&state==="over"&&!(document.activeElement&&document.activeElement.tagName==="BUTTON")){startGame();return}
@@ -435,7 +462,7 @@ on("settingsBtn",()=>show("settingsScreen"));on("helpBtn",()=>show("helpScreen")
 $("soundToggle").checked=soundOn;$("vibrationToggle").checked=vibOn;$("reduceToggle").checked=reduce;
 $("soundToggle").onchange=e=>{soundOn=e.target.checked;store.set("oryvexSound",soundOn)};
 $("vibrationToggle").onchange=e=>{vibOn=e.target.checked;store.set("oryvexVibration",vibOn)};
-$("reduceToggle").onchange=e=>{reduce=e.target.checked;fx=!reduce&&!slow;store.set("oryvexReduce",reduce)};
+$("reduceToggle").onchange=e=>{reduce=e.target.checked;fx=!reduce&&!slow;document.documentElement.classList.toggle("lite",reduce||slow);store.set("oryvexReduce",reduce)};
 document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;store.set("oryvexMode",mode);refreshHome()});
 on("dailyBtn",()=>{renderDaily();show("dailyScreen")});
 on("claimBtn",()=>{if(store.get("oryvexDaily","")!==today()){const s=streakNow(),r=REW[s%7];store.set("oryvexStreak",s+1);store.set("oryvexDaily",today());bank+=r;store.set("oryvexBank",bank);toast("+"+r+" ✦ DAILY REWARD");buzz(15)}show("startScreen");refreshHome()});

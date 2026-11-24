@@ -1,5 +1,5 @@
 {
-  "name": "ORYVEX \u2014 Neon Color Arcade",
+  "name": "ORYVEX — Neon Color Arcade",
   "short_name": "ORYVEX",
   "description": "Find your color. Break the orbit.",
   "start_url": "./",
@@ -20,10 +20,21 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "id": "./",
   "categories": [
     "games"
+  ],
+  "lang": "en",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
   ]
 }
