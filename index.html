@@ -17,26 +17,24 @@
 
     <section id="startScreen" class="screen">
       <div class="start-card">
-        <img class="brand-logo" src="logo.png" alt="ORYVEX neon orb logo">
-        <h1>ORYVEX</h1>
-        <p class="tagline">Find your color. Break the orbit.</p>
         <div class="chips">
           <div class="chip"><span>BEST</span><b id="homeBest">0</b></div>
           <div class="chip"><span>STARS</span><b>✦ <span id="bank">0</span></b></div>
         </div>
-        <button id="playBtn" class="primary">PLAY</button>
-        <div class="mode-wrap">
-          <div class="mode-row">
-            <button class="mode active" data-mode="classic">CLASSIC</button>
-            <button class="mode" data-mode="infinity">INFINITY</button>
-            <button class="mode" data-mode="hard">HARD</button>
-          </div>
-          <div id="modeNote" class="small-note"></div>
+        <h1>ORYVEX</h1>
+        <p class="tagline">Find your color. Break the orbit.</p>
+        <div class="orbit"><i class="r1"></i><i class="r2"></i><button id="playBtn" class="play-orb" aria-label="Play">▶</button></div>
+        <div class="section-label">GAME MODES</div>
+        <div class="mode-row">
+          <button class="mode active" data-mode="classic">CLASSIC</button>
+          <button class="mode" data-mode="infinity">INFINITY</button>
+          <button class="mode" data-mode="hard">HARD</button>
         </div>
+        <div id="modeNote" class="small-note"></div>
         <div class="menu-row">
-          <button id="settingsBtn" class="secondary">⚙ Settings</button>
-          <button id="helpBtn" class="secondary">? Help</button>
-          <button id="dailyBtn" class="secondary">✦ Daily</button>
+          <button id="settingsBtn" class="secondary" aria-label="Settings">⚙</button>
+          <button id="helpBtn" class="secondary" aria-label="Help">?</button>
+          <button id="dailyBtn" class="secondary" aria-label="Daily reward">✦</button>
         </div>
         <div id="dailyNote" class="small-note"></div>
       </div>
@@ -82,6 +80,7 @@
         <p>Tap, click or press <b>SPACE</b> to bounce up. Gravity pulls you back down.</p>
         <p>You can only pass through parts that match your ball's color. Touch any other color and you lose.</p>
         <p>Collect <b>stars</b> for points and to save up. The <b>four-color orb</b> changes your color.</p>
+        <p>Every 5 obstacles is a new level: new shapes and faster spins.</p>
         <p>Spend 5 ✦ to continue once per run. <b>Infinity</b> gives you 3 lives. <b>Hard</b> is faster and tighter.</p>
         <button id="helpBackBtn" class="primary">GOT IT</button>
       </div>

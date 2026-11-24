@@ -1,13 +1,13 @@
 (()=>{"use strict";
 const $=id=>document.getElementById(id),cv=$("game"),ctx=cv.getContext("2d");
-const COLORS=["#00E5FF","#FFD400","#B026FF","#FF2E7E"],TAU=Math.PI*2,HALF=Math.PI/2,G=1400,JUMP=420;
+const COLORS=["#32DBF0","#F6DF0E","#8C13FB","#FF0181"],TAU=Math.PI*2,HALF=Math.PI/2,G=1500,JUMP=380;
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),mod=(a,n)=>((a%n)+n)%n,pick=a=>a[Math.floor(Math.random()*a.length)];
 const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const MODES={classic:{lives:1,speed:1,gap:1},infinity:{lives:3,speed:.85,gap:1.1},hard:{lives:1,speed:1.35,gap:.8}};
 const NOTES={classic:"One life. The pure neon climb.",infinity:"Three lives. A wrong color costs a life, not the run.",hard:"Faster spins and tighter gaps. One life."};
 let w=0,h=0,dpr=1,last=0,clock=0,slow=false,pf={t:0,n:0};
 let mode=store.get("oryvexMode","classic");if(!MODES[mode])mode="classic";
-let state="start",score=0,runStars=0,lives=1,invuln=0,started=false,continueUsed=false,shake=0,camY=0,edge=0,lastType="",count=0;
+let state="start",score=0,runStars=0,lives=1,invuln=0,started=false,continueUsed=false,shake=0,camY=0,edge=0,lastType="",count=0,lvl=1,passedN=0,hueCur=228;
 let ball=null,obstacles=[],items=[],parts=[],waves=[],texts=[],bg=[];
 let bank=+store.get("oryvexBank",0)||0,best={},reduce=store.get("oryvexReduce","false")==="true",fx=!reduce;
 for(const m in MODES)best[m]=+store.get("oryvexBest_"+m,m==="classic"?store.get("oryvexBest",0):0)||0;
@@ -20,8 +20,8 @@ const today=()=>{const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+
 function toast(m){const el=$("toast");el.textContent=m;el.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),1800)}
 function show(id){["startScreen","pauseScreen","gameOverScreen","settingsScreen","helpScreen"].forEach(s=>$(s).classList.toggle("hidden",s!==id))}
 function setState(s){state=s;const p=s==="playing";$("hud").classList.toggle("hidden",!p);$("pauseBtn").classList.toggle("hidden",!p);$("tapHint").classList.toggle("hidden",!(p&&!started));show({start:"startScreen",paused:"pauseScreen",over:"gameOverScreen"}[s]||"")}
-function updateHud(){const m=MODES[mode];$("hudScore").textContent=score;$("hudMode").textContent=mode.toUpperCase();$("hudLives").textContent=m.lives>1?"♥".repeat(Math.max(0,lives))+"♡".repeat(Math.max(0,m.lives-lives)):""}
-function refreshHome(){$("homeBest").textContent=best[mode];$("bank").textContent=bank;$("modeNote").textContent=NOTES[mode];document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));const c=store.get("oryvexDaily","")===today();$("dailyBtn").classList.toggle("done",c);$("dailyNote").textContent=c?"Daily reward claimed. Come back tomorrow.":"Daily reward ready: +10 ✦"}
+function updateHud(){const m=MODES[mode];$("hudScore").textContent=score;$("hudMode").textContent="LEVEL "+lvl;$("hudLives").textContent=m.lives>1?"♥".repeat(Math.max(0,lives))+"♡".repeat(Math.max(0,m.lives-lives)):""}
+function refreshHome(){$("homeBest").textContent=best[mode];$("bank").textContent=bank;$("modeNote").textContent=NOTES[mode];document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));const c=store.get("oryvexDaily","")===today();$("dailyBtn").classList.toggle("done",c);$("dailyBtn").classList.toggle("ready",!c);$("dailyNote").textContent=c?"Daily reward claimed. Come back tomorrow.":"Daily reward ready: +10 ✦"}
 
 /* ---------- layout ---------- */
 function resize(){dpr=Math.min(window.devicePixelRatio||1,2);w=window.innerWidth;h=window.innerHeight;cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
@@ -31,27 +31,27 @@ function menuDemo(){obstacles=[];items=[];[[.1,.18,50],[.93,.46,64],[.08,.82,56]
 
 /* ---------- obstacles ---------- */
 function mk(type,level){const R=clamp(w*.19,54,78),m=MODES[mode];
- const o={type,x:w/2,y:0,R,th:14,rot:rand(0,TAU),dir:Math.random()<.5?-1:1,off:Math.floor(rand(0,4)),spd:(.85+Math.min(level,14)*.045)*m.speed,scroll:rand(0,500),passed:false};
- if(type==="bars")o.th=16;
- o.ext={ring:R+6,double:R*1.05+6,windmill:R*1.1+6,square:R*1.05+6,triangle:R*1.15+6,bars:12}[type];return o}
-function spawn(){const n=count++,level=Math.floor(n/2);
- const types=n<2?["ring"]:n<4?["ring","double"]:n<7?["ring","double","windmill"]:n<10?["ring","double","windmill","bars"]:["ring","double","windmill","bars","square","triangle"];
- let type=pick(types);if(type===lastType&&types.length>1)type=pick(types);lastType=type;
- const o=mk(type,level),gap=(n===0?60:rand(130,170))*MODES[mode].gap*clamp(1-level*.012,.8,1),prevEdge=edge;
+ const o={type,x:w/2,y:0,R,th:14,rot:rand(0,TAU),dir:Math.random()<.5?-1:1,off:Math.floor(rand(0,4)),spd:(.8+Math.min(level,18)*.06)*m.speed,scroll:rand(0,500),scroll2:rand(0,500),passed:false};
+ if(type==="bars"||type==="bars2")o.th=16;
+ o.ext={ring:R+6,double:R*1.05+6,windmill:R*1.1+6,square:R*1.05+6,triangle:R*1.15+6,bars:12,triple:R*1.15+8,bars2:26}[type];return o}
+function spawn(){const n=count++,lv=Math.floor(n/5)+1,level=lv-1,ORDER=["ring","double","windmill","bars","square","triangle","triple","bars2"],types=ORDER.slice(0,Math.min(ORDER.length,lv));
+ let type=pick(types);if(lv>1&&Math.random()<.4)type=types[types.length-1];if(type===lastType&&types.length>1)type=pick(types);lastType=type;
+ const o=mk(type,level),gap=(n===0?60:rand(130,170))*MODES[mode].gap*clamp(1-level*.018,.72,1),prevEdge=edge;
  o.y=edge-gap-o.ext;edge=o.y-o.ext;obstacles.push(o);
- items.push({type:"star",x:w/2,y:type==="bars"?o.y-44:o.y,r:9,taken:false});
+ items.push({type:"star",x:w/2,y:(type==="bars"||type==="bars2")?o.y-44:o.y,r:9,taken:false});
  if(n>=2&&Math.random()<.35)items.push({type:"orb",x:w/2,y:(prevEdge+o.y+o.ext)/2,r:11,taken:false})}
-function ringsOf(o){if(o.type==="double"){const r=o.R*1.05;return[{r,rot:o.rot,off:o.off},{r:r*.62,rot:-o.rot+Math.PI/4,off:o.off+2}]}return[{r:o.R,rot:o.rot,off:o.off}]}
+function ringsOf(o){if(o.type==="triple")return[{r:o.R*1.15,rot:o.rot,off:o.off},{r:o.R*.85,rot:-o.rot*1.3+Math.PI/4,off:o.off+2},{r:o.R*.55,rot:o.rot*1.6,off:o.off+1}];if(o.type==="double"){const r=o.R*1.05;return[{r,rot:o.rot,off:o.off},{r:r*.62,rot:-o.rot+Math.PI/4,off:o.off+2}]}return[{r:o.R,rot:o.rot,off:o.off}]}
 function segsOf(o){const s=[],x=o.x,y=o.y,R=o.R;
  if(o.type==="windmill")for(let i=0;i<4;i++){const a=o.rot+i*HALF,L=R*1.1;s.push({x1:x,y1:y,x2:x+Math.cos(a)*L,y2:y+Math.sin(a)*L,c:mod(i+o.off,4)})}
  else if(o.type==="square"||o.type==="triangle"){const n=o.type==="square"?4:3,rr=o.type==="square"?R*1.05:R*1.15,p=[];for(let i=0;i<n;i++){const a=o.rot+i*TAU/n-HALF;p.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr])}for(let i=0;i<n;i++){const q=p[(i+1)%n];s.push({x1:p[i][0],y1:p[i][1],x2:q[0],y2:q[1],c:mod(i+o.off,4)})}}
  return s}
 const colorAt=(a,off)=>mod(Math.floor(mod(a,TAU)/HALF)+off,4);
-const colorAtX=(o,x)=>mod(Math.floor((x-o.scroll)/(w*.3))+o.off,4);
+const colorAtX=(o,x,sc=o.scroll,off=o.off)=>mod(Math.floor((x-sc)/(w*.3))+off,4);
 function distSeg(px,py,s){const dx=s.x2-s.x1,dy=s.y2-s.y1,l=dx*dx+dy*dy,t=l?clamp(((px-s.x1)*dx+(py-s.y1)*dy)/l,0,1):0;return Math.hypot(px-(s.x1+t*dx),py-(s.y1+t*dy))}
 function hits(o){const br=ball.r*.8,dx=ball.x-o.x,dy=ball.y-o.y;
  if(o.type==="bars")return Math.abs(dy)<o.th/2+br-1&&colorAtX(o,ball.x)!==ball.color;
- if(o.type==="ring"||o.type==="double"){const d=Math.hypot(dx,dy),a=Math.atan2(dy,dx);for(const r of ringsOf(o))if(Math.abs(d-r.r)<o.th/2+br&&colorAt(a-r.rot,r.off)!==ball.color)return true;return false}
+ if(o.type==="bars2")return(Math.abs(dy+15)<o.th/2+br-1&&colorAtX(o,ball.x)!==ball.color)||(Math.abs(dy-15)<o.th/2+br-1&&colorAtX(o,ball.x,o.scroll2,o.off+1)!==ball.color);
+ if(o.type==="ring"||o.type==="double"||o.type==="triple"){const d=Math.hypot(dx,dy),a=Math.atan2(dy,dx);for(const r of ringsOf(o))if(Math.abs(d-r.r)<o.th/2+br&&colorAt(a-r.rot,r.off)!==ball.color)return true;return false}
  for(const s of segsOf(o))if(s.c!==ball.color&&distSeg(ball.x,ball.y,s)<o.th/2+br)return true;return false}
 
 /* ---------- effects ---------- */
@@ -66,7 +66,7 @@ function fxUpdate(dt){for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=380*
 
 /* ---------- game flow ---------- */
 function startGame(){ball={x:w/2,y:h*.7,hy:h*.7,vy:0,r:10,color:Math.floor(Math.random()*4),trail:[]};
- camY=0;obstacles=[];items=[];parts=[];waves=[];texts=[];score=0;runStars=0;lives=MODES[mode].lives;invuln=0;started=false;continueUsed=false;lastType="";count=0;edge=ball.y-130;
+ camY=0;obstacles=[];items=[];parts=[];waves=[];texts=[];score=0;runStars=0;lives=MODES[mode].lives;invuln=0;started=false;continueUsed=false;lastType="";count=0;lvl=1;passedN=0;hueCur=228;edge=ball.y-130;
  updateHud();setState("playing");last=performance.now()}
 function goHome(){ball=null;menuDemo();setState("start");refreshHome()}
 function jump(){if(state!=="playing")return;if(!started){started=true;$("tapHint").classList.add("hidden")}ball.vy=-JUMP;tone(520,.07,"triangle",.04,700)}
@@ -80,7 +80,7 @@ function fell(){invuln=0;hurt();if(state==="playing"){ball.y=camY+h*.65;ball.vy=
 function switchColor(c){let n=Math.floor(Math.random()*3);if(n>=ball.color)n++;ball.color=n;burst(c.x,c.y,COLORS[n],18);wave(c.x,c.y,COLORS[n]);tone(660,.16,"sine",.05,1100);buzz(12);toast("COLOR SHIFT")}
 function collect(){for(const c of items){if(c.taken)continue;if(Math.hypot(ball.x-c.x,ball.y-c.y)<ball.r+c.r+4){c.taken=true;
   if(c.type==="star"){score++;runStars++;bank++;store.set("oryvexBank",bank);burst(c.x,c.y,"#ffffff",10);wave(c.x,c.y,"#ffffff");pop("+1",c.x,c.y,"#fff");tone(980,.08,"sine",.04,1500);buzz(8)}else switchColor(c);updateHud()}}}
-function phys(sd){for(const o of obstacles){o.rot+=o.dir*o.spd*sd;if(o.type==="bars")o.scroll=mod(o.scroll+o.dir*o.spd*70*sd,w*1.2)}
+function phys(sd){for(const o of obstacles){o.rot+=o.dir*o.spd*sd;if(o.type==="bars"||o.type==="bars2"){o.scroll=mod(o.scroll+o.dir*o.spd*70*sd,w*1.2);o.scroll2=mod(o.scroll2-o.dir*o.spd*70*sd,w*1.2)}}
  if(!started){ball.y=ball.hy+Math.sin(clock*3)*4;return}
  ball.vy=Math.min(ball.vy+G*sd,1000);ball.y+=ball.vy*sd;
  const tg=ball.y-h*.58;if(tg<camY)camY+=(tg-camY)*Math.min(1,sd*14);
@@ -88,7 +88,7 @@ function phys(sd){for(const o of obstacles){o.rot+=o.dir*o.spd*sd;if(o.type==="b
  invuln=Math.max(0,invuln-sd);
  for(const o of obstacles){
   if(invuln<=0&&Math.abs(ball.y-o.y)<o.ext+ball.r+2&&hits(o)){hurt();if(state!=="playing")return}
-  if(!o.passed&&ball.y<o.y-o.ext){o.passed=true;tone(420+Math.min(score,40)*8,.05,"triangle",.025)}}
+  if(!o.passed&&ball.y<o.y-o.ext){o.passed=true;passedN++;tone(420+Math.min(passedN,40)*8,.05,"triangle",.025);const nl=Math.floor(passedN/5)+1;if(nl>lvl){lvl=nl;updateHud();toast("LEVEL "+lvl);wave(ball.x,ball.y,"#ffffff");tone(660,.14,"triangle",.05,990);buzz(15)}}}
  collect()}
 function stepWorld(dt){const n=Math.min(6,Math.ceil(dt/.011));for(let i=0;i<n&&state==="playing";i++)phys(dt/n);
  if(state!=="playing")return;
@@ -98,10 +98,12 @@ function pause(){if(state!=="playing")return;setState("paused")}
 function resume(){if(state!=="paused")return;setState("playing");last=performance.now()}
 
 /* ---------- drawing ---------- */
-function drawObstacle(o){const y=o.y-camY;if(y+o.ext<0||y-o.ext>h)return;const gl=fx?16:0;ctx.save();ctx.lineWidth=o.th;ctx.lineCap="butt";
- if(o.type==="bars"){const sw=w*.3,k0=Math.floor(-o.scroll/sw)-1,k1=Math.ceil((w-o.scroll)/sw)+1;
-  for(let k=k0;k<=k1;k++){const c=COLORS[mod(k+o.off,4)],x=k*sw+o.scroll;ctx.fillStyle=c;ctx.shadowColor=c;ctx.shadowBlur=gl;ctx.fillRect(x,y-o.th/2,sw+.5,o.th);ctx.shadowBlur=0;ctx.fillStyle="rgba(255,255,255,.28)";ctx.fillRect(x,y-o.th/2,sw+.5,2.5)}}
- else if(o.type==="ring"||o.type==="double"){
+function drawBar(y,sc,off,th,gl){const sw=w*.3,k0=Math.floor(-sc/sw)-1,k1=Math.ceil((w-sc)/sw)+1;
+ for(let k=k0;k<=k1;k++){const c=COLORS[mod(k+off,4)],x=k*sw+sc;ctx.fillStyle=c;ctx.shadowColor=c;ctx.shadowBlur=gl;ctx.fillRect(x,y-th/2,sw+.5,th);ctx.shadowBlur=0;ctx.fillStyle="rgba(255,255,255,.2)";ctx.fillRect(x,y-th/2,sw+.5,2.5)}}
+function drawObstacle(o){const y=o.y-camY;if(y+o.ext<0||y-o.ext>h)return;const gl=fx?10:0;ctx.save();ctx.lineWidth=o.th;ctx.lineCap="butt";
+ if(o.type==="bars")drawBar(y,o.scroll,o.off,o.th,gl);
+ else if(o.type==="bars2"){drawBar(y-15,o.scroll,o.off,o.th,gl);drawBar(y+15,o.scroll2,o.off+1,o.th,gl)}
+ else if(o.type==="ring"||o.type==="double"||o.type==="triple"){
   for(const r of ringsOf(o))for(let i=0;i<4;i++){const a0=r.rot+i*HALF,a1=a0+HALF,c=COLORS[mod(i+r.off,4)];
    ctx.lineWidth=o.th;ctx.strokeStyle=c;ctx.shadowColor=c;ctx.shadowBlur=gl;ctx.beginPath();ctx.arc(o.x,y,r.r,a0,a1);ctx.stroke();
    ctx.shadowBlur=0;ctx.lineWidth=2.5;ctx.strokeStyle="rgba(255,255,255,.24)";ctx.beginPath();ctx.arc(o.x,y,r.r-o.th/2+2.5,a0+.03,a1-.03);ctx.stroke()}}
@@ -117,21 +119,20 @@ function drawBall(){const y=ball.y-camY,c=COLORS[ball.color];
 
  ctx.globalAlpha=invuln>0&&Math.floor(clock*14)%2?.35:1;
 
- ctx.shadowColor=c;ctx.shadowBlur=fx?16:0;ctx.fillStyle=c;ctx.beginPath();ctx.arc(ball.x,y,ball.r,0,TAU);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1}
+ ctx.shadowColor=c;ctx.shadowBlur=fx?6:0;ctx.fillStyle=c;ctx.beginPath();ctx.arc(ball.x,y,ball.r,0,TAU);ctx.fill();ctx.shadowBlur=0;ctx.globalAlpha=1}
 function draw(){ctx.setTransform(dpr,0,0,dpr,0,0);
- const hue=(228+score*1.5)%360,g=ctx.createRadialGradient(w/2,h*.35,10,w/2,h*.5,Math.max(w,h)*.85);
+ const hue=mod(hueCur,360),g=ctx.createRadialGradient(w/2,h*.35,10,w/2,h*.5,Math.max(w,h)*.85);
  g.addColorStop(0,"hsl("+hue+",55%,13%)");g.addColorStop(1,"hsl("+((hue+30)%360)+",70%,3.5%)");ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
  ctx.fillStyle="#bcd4ff";for(const s of bg){ctx.globalAlpha=s.a*(.65+.35*Math.sin(clock*2+s.x));ctx.fillRect(s.x,mod(s.y-camY*s.l,h),s.r,s.r)}ctx.globalAlpha=1;
- if(ball&&fx){const y=ball.y-camY,rg=ctx.createRadialGradient(ball.x,y,0,ball.x,y,170);rg.addColorStop(0,COLORS[ball.color]+"33");rg.addColorStop(1,"transparent");ctx.fillStyle=rg;ctx.fillRect(0,0,w,h)}
  if(shake>.1)ctx.translate(rand(-shake,shake),rand(-shake,shake));
- if(!ball)ctx.globalAlpha=.35;
+ if(!ball)ctx.globalAlpha=.2;
  for(const o of obstacles)drawObstacle(o);ctx.globalAlpha=1;
  if(ball){for(const c of items)drawItem(c);drawBall()}
  for(const a of waves){ctx.globalAlpha=clamp(a.life/.45,0,1);ctx.strokeStyle=a.c;ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(a.x,a.y-camY,a.r,0,TAU);ctx.stroke()}
  for(const p of parts){ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y-camY,p.r,0,TAU);ctx.fill()}
  ctx.globalAlpha=1;ctx.font="800 16px system-ui,sans-serif";ctx.textAlign="center";
  for(const t of texts){ctx.globalAlpha=clamp(t.life/.5,0,1);ctx.fillStyle=t.c;ctx.fillText(t.t,t.x,t.y-camY-14)}ctx.globalAlpha=1}
-function loop(now){const dt=Math.min((now-last)/1000||0,.05);last=now;clock+=dt;
+function loop(now){const dt=Math.min((now-last)/1000||0,.05);last=now;clock+=dt;hueCur+=((228+(lvl-1)*28)-hueCur)*Math.min(1,dt*1.5);
  if(++pf.n>0)pf.t+=dt;if(pf.n===90){if(pf.t/90>.026)slow=true;pf.t=pf.n=0;fx=!reduce&&!slow}
  if(state==="playing")stepWorld(dt);else if(state==="start")for(const o of obstacles)o.rot+=o.dir*.4*dt;
  fxUpdate(dt);draw();requestAnimationFrame(loop)}
