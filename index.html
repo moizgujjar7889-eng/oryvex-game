@@ -135,6 +135,8 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
 .hud strong{text-shadow:0 0 24px rgba(140,19,251,.55),0 0 4px rgba(255,255,255,.3)}
 #hudLives{text-shadow:0 0 10px rgba(255,1,129,.6)}
 .toast{background:rgba(14,10,40,.88);border-color:rgba(140,19,251,.45);box-shadow:0 8px 30px rgba(0,0,0,.5),0 0 20px rgba(140,19,251,.25);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.opt.skn{height:auto;padding:8px 0 6px}.opt{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+canvas.sk{position:static;inset:auto;display:block;width:34px;height:34px;margin:0 auto 5px;touch-action:auto}
 .hud-pause,#pauseBtn,.toast{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .card,.card *{overflow-wrap:anywhere}
 .stats3 b,.gc strong,.hud strong{font-variant-numeric:tabular-nums}
@@ -270,7 +272,7 @@ h2{margin:8px 0 16px;font-size:20px;font-weight:300;letter-spacing:.3em;padding-
   </main>
 <script>
 (()=>{"use strict";
-const $=id=>document.getElementById(id),cv=$("game"),ctx=cv.getContext("2d");
+let ctx;const $=id=>document.getElementById(id),cv=$("game");ctx=cv.getContext("2d");
 const COLORS=["#32DBF0","#F6DF0E","#8C13FB","#FF0181"],TAU=Math.PI*2,HALF=Math.PI/2,G=1500,JUMP=380;
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),mod=(a,n)=>((a%n)+n)%n,pick=a=>a[Math.floor(Math.random()*a.length)];
 const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
@@ -294,17 +296,21 @@ function applyVol(){if(sfxG)sfxG.gain.value=sfxVol*5;if(musG)musG.gain.value=mus
 function mkAc(){const a=new(window.AudioContext||window.webkitAudioContext)(),c=a.createDynamicsCompressor();c.threshold.value=-8;c.knee.value=10;c.ratio.value=6;c.attack.value=.003;c.release.value=.15;c.connect(a.destination);sfxG=a.createGain();musG=a.createGain();sfxG.connect(c);musG.connect(a.destination);applyVol();return a}
 function tone(f,d=.09,type="sine",v=.05,to){if(!soundOn)return;try{ac=ac||mkAc();if(ac.state==="suspended")ac.resume();const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(sfxG);o.start(t);o.stop(t+d+.02)}catch(e){}}
 const buzz=ms=>{if(vibOn&&navigator.vibrate)try{navigator.vibrate(ms)}catch(e){}};
-const nowMs=()=>{const l=+store.get("oryvexSeen",0)||0,n=Date.now();if(n>l)store.set("oryvexSeen",n);return Math.max(n,l)};
+const nowMs=()=>Date.now();
+const dayN=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
+function lastN(){let n=+store.get("oryvexDailyN",0)||0;if(!n){const m=/^(\d+)-(\d+)-(\d+)$/.exec(store.get("oryvexDaily",""));if(m)n=Math.floor(Date.UTC(+m[1],+m[2]-1,+m[3])/864e5)}return n}
+const claimedToday=()=>lastN()===dayN();
+if(lastN()>dayN())store.set("oryvexDailyN",dayN()-1);/* claim date in the future (clock was wrong): heal it */
 const today=()=>{const d=new Date(nowMs());return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()};
 function toast(m){const el=$("toast");el.textContent=m;el.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),1800)}
 function show(id){["startScreen","pauseScreen","gameOverScreen","settingsScreen","helpScreen","shopScreen","boardScreen","dailyScreen","achScreen"].forEach(s=>$(s).classList.toggle("hidden",s!==id))}
 function setState(s){state=s;const p=s==="playing";$("hud").classList.toggle("hidden",!p);$("pauseBtn").classList.toggle("hidden",!p);$("tapHint").classList.toggle("hidden",!(p&&!started));show({start:"startScreen",paused:"pauseScreen",over:"gameOverScreen"}[s]||"")}
 function updateHud(){const m=MODES[mode],el=$("hudScore");if(el.textContent!==String(score)){el.textContent=score;el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump")}
  $("hudMode").textContent="LEVEL "+lvl;$("hudLives").textContent=m.lives>1?"●".repeat(Math.max(0,lives))+"○".repeat(Math.max(0,m.lives-lives)):""}
-function refreshHome(){$("homeBest").textContent=best[mode];$("bank").textContent=bank;$("modeNote").textContent=NOTES[mode];document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));const c=store.get("oryvexDaily","")===today();$("dailyBtn").classList.toggle("done",c);$("dailyBtn").classList.toggle("ready",!c);$("dailyNote").textContent=c?"Daily reward claimed. Come back tomorrow.":"Daily reward ready: +"+REW[streakNow()%7]+" ✦"}
+function refreshHome(){$("homeBest").textContent=best[mode];$("bank").textContent=bank;$("modeNote").textContent=NOTES[mode];document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));const c=claimedToday();$("dailyBtn").classList.toggle("done",c);$("dailyBtn").classList.toggle("ready",!c);$("dailyNote").textContent=c?"Daily reward claimed. Come back tomorrow.":"Daily reward ready: +"+REW[streakNow()%7]+" ✦"}
 
 /* ---------- collection, streak, leaderboard, music ---------- */
-const SKINS=[["orb","ORB",0],["ring","RING",15],["diamond","DIAMOND",30],["square","SQUARE",35],["tri","TRIANGLE",35],["star","STAR",40],["heart","HEART",45],["hex","HEX",50],["plus","CROSS",55],["bolt","BOLT",70],["flower","FLOWER",80],["gem","GEM",90],["smiley","SMILEY",100],["bullseye","TARGET",120],["beach","BEACH BALL",140],["eye","EYE",180]],TRAILS=[["none","NONE",0],["glow","GLOW",10],["dots","DOTS",25],["line","LINE",30],["comet","COMET",40],["spark","SPARK",45],["bubbles","BUBBLES",55],["rainbow","RAINBOW",70],["stars","STARS",85]];
+const SKINS0=[["orb","ORB",0],["ring","RING",15],["diamond","DIAMOND",30],["square","SQUARE",35],["tri","TRIANGLE",35],["star","STAR",40],["heart","HEART",45],["hex","HEX",50],["plus","CROSS",55],["bolt","BOLT",70],["flower","FLOWER",80],["gem","GEM",90],["smiley","SMILEY",100],["bullseye","TARGET",120],["beach","BEACH BALL",140],["eye","EYE",180]],SKINS=SKINS0.concat([["drop","DROP",25],["clover","CLOVER",50],["moon","MOON",65],["ghost","GHOST",70],["skull","SKELETON",75],["cat","CAT",85],["robot","ROBOT",95],["alien","ALIEN",105],["rocket","ROCKET",115],["pumpkin","PUMPKIN",130],["sun","SUN",150],["snow","SNOWFLAKE",160],["flame","FLAME",200],["crown","CROWN",250]]).sort((a,b)=>a[2]-b[2]),TRAILS=[["none","NONE",0],["glow","GLOW",10],["dots","DOTS",25],["line","LINE",30],["comet","COMET",40],["spark","SPARK",45],["bubbles","BUBBLES",55],["rainbow","RAINBOW",70],["stars","STARS",85]];
 let owned;try{owned=JSON.parse(store.get("oryvexOwned",'["orb","none"]'))}catch(e){owned=["orb","none"]}
 let stats;try{stats=JSON.parse(store.get("oryvexStats","{}"))||{}}catch(e){stats={}}stats.runs=stats.runs||0;stats.stars=stats.stars||0;stats.daily=stats.daily||0;const saveStats=()=>store.set("oryvexStats",JSON.stringify(stats));
 let ach;try{ach=JSON.parse(store.get("oryvexAch","{}"))||{}}catch(e){ach={}}
@@ -312,12 +318,13 @@ const ACH=[["a1","FIRST FLIGHT","Finish your first run",5,s=>s.runs>=1],["a2","S
 function checkAch(){for(const[i,n,d,r,t]of ACH)if(!ach[i]&&t(stats)){ach[i]=1;store.set("oryvexAch",JSON.stringify(ach));bank+=r;store.set("oryvexBank",bank);toast("\u{1F3C6} "+n+"  +"+r+" \u2726")}}
 function renderAch(){const el=$("achList");el.innerHTML="";let c=0;for(const[i,n,d,r]of ACH){const g=ach[i];if(g)c++;const row=document.createElement("div");row.className="row"+(g?" got":"");row.innerHTML="<span>"+n+"<small>"+d+"</small></span><b>"+(g?"\u2713":"+"+r+" \u2726")+"</b>";el.appendChild(row)}$("achCount").textContent=c+" / "+ACH.length+" UNLOCKED"}
 let skin=store.get("oryvexSkin","orb"),trail=store.get("oryvexTrail","none");
-function renderShop(){$("shopBank").textContent=bank;[["skinList",SKINS,"skin"],["trailList",TRAILS,"trail"]].forEach(([id,L,k])=>{const el=$(id);el.innerHTML="";L.forEach(([i,n,c])=>{const b=document.createElement("button"),has=owned.includes(i),sel=(k==="skin"?skin:trail)===i;b.className="opt"+(sel?" on":"");b.innerHTML=n+"<small>"+(sel?"EQUIPPED":has?"OWNED":c+" ✦")+"</small>";
- b.onclick=()=>{if(!has){if(bank<c){toast("NEED "+c+" ✦");return}bank-=c;store.set("oryvexBank",bank);owned.push(i);store.set("oryvexOwned",JSON.stringify(owned))}if(k==="skin"){skin=i;store.set("oryvexSkin",i)}else{trail=i;store.set("oryvexTrail",i)}renderShop();refreshHome()};el.appendChild(b)})})}
+function renderShop(){$("shopBank").textContent=bank;[["skinList",SKINS,"skin"],["trailList",TRAILS,"trail"]].forEach(([id,L,k])=>{const el=$(id);el.innerHTML="";L.forEach(([i,n,c])=>{const b=document.createElement("button"),has=owned.includes(i),sel=(k==="skin"?skin:trail)===i;b.className="opt"+(k==="skin"?" skn":"")+(sel?" on":"");b.innerHTML=n+"<small>"+(sel?"EQUIPPED":has?"OWNED":c+" ✦")+"</small>";
+ b.onclick=()=>{if(!has){if(bank<c){toast("NEED "+c+" ✦");return}bank-=c;store.set("oryvexBank",bank);owned.push(i);store.set("oryvexOwned",JSON.stringify(owned))}if(k==="skin"){skin=i;store.set("oryvexSkin",i)}else{trail=i;store.set("oryvexTrail",i)}renderShop();refreshHome()};if(k==="skin")b.prepend(skinIcon(i,L.findIndex(x=>x[0]===i)));el.appendChild(b)})})}
+function skinIcon(id,idx){const c=document.createElement("canvas");c.width=c.height=68;c.className="sk";const o=ctx,os=skin;try{ctx=c.getContext("2d");skin=id;ctx.translate(34,34);const col=COLORS[idx%4],r=17;ctx.fillStyle=col;ctx.strokeStyle=col;ctx.shadowBlur=0;ballShape(r);ballDet(r);ctx.fillStyle="rgba(255,255,255,.3)";ctx.beginPath();ctx.ellipse(-r*.3,-r*.4,r*.38,r*.22,-.5,0,TAU);ctx.fill()}catch(e){}ctx=o;skin=os;return c}
 const ymd=d=>d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(),yest=()=>{const d=new Date(nowMs());d.setDate(d.getDate()-1);return ymd(d)},REW=[10,10,15,15,20,20,50];
 if(store.get("oryvexBestDay","")!==today()){best.daily=0;store.set("oryvexBest_daily",0);store.set("oryvexBestDay",today())}
-function streakNow(){const l=store.get("oryvexDaily","");return l===today()||l===yest()?(+store.get("oryvexStreak",0)||0):0}
-function renderDaily(){const s=streakNow(),c=store.get("oryvexDaily","")===today(),dn=c?((s-1)%7)+1:s%7,g=$("streakGrid");g.innerHTML="";REW.forEach((r,i)=>{const d=document.createElement("div");d.className="day"+(i<dn?" done":"")+(!c&&i===dn?" now":"");d.innerHTML="DAY "+(i+1)+"<b>"+r+"</b>";g.appendChild(d)});$("claimBtn").textContent=c?"BACK":"CLAIM +"+REW[s%7]+" ✦"}
+function streakNow(){const l=lastN(),n=dayN();return l===n||l===n-1?(+store.get("oryvexStreak",0)||0):0}
+function renderDaily(){const s=streakNow(),c=claimedToday(),dn=c?((s-1)%7)+1:s%7,g=$("streakGrid");g.innerHTML="";REW.forEach((r,i)=>{const d=document.createElement("div");d.className="day"+(i<dn?" done":"")+(!c&&i===dn?" now":"");d.innerHTML="DAY "+(i+1)+"<b>"+r+"</b>";g.appendChild(d)});$("claimBtn").textContent=c?"BACK":"CLAIM +"+REW[s%7]+" ✦"}
 const FB={projectId:"oryvex-37064",apiKey:"AIzaSyD24eU2KmjUhXqh25lTWs1IK-4BxqDSdeE"};/* paste your Firebase values here, see SETUP.md */
 const lbc=m=>"lb_"+(m==="daily"?"daily_"+today():m);
 const fbOn=()=>FB.projectId&&FB.apiKey,fbU=p=>"https://firestore.googleapis.com/v1/projects/"+FB.projectId+"/databases/(default)/documents"+p;
@@ -358,15 +365,43 @@ function musicTick(){try{const want=musicOn&&ac&&ac.state==="running"&&!document
  if(want&&musBuf&&!musSrc)startMusic();else if(!want&&musSrc)stopMusic();
  if(musSrc)musSrc.playbackRate.setTargetAtTime(1+Math.min(lvl,10)*.008,ac.currentTime,.6)}catch(e){}setTimeout(musicTick,300)}
 setTimeout(musicTick,500);
+const sub=(r,p)=>{let a=0;for(let i=0;i<p.length;i++){const q=p[(i+1)%p.length];a+=p[i][0]*q[1]-q[0]*p[i][1]}if(a<0)p=p.slice().reverse();ctx.moveTo(p[0][0]*r,p[0][1]*r);for(let i=1;i<p.length;i++)ctx.lineTo(p[i][0]*r,p[i][1]*r);ctx.closePath()},cir=(x,y,q)=>{ctx.moveTo(x+q,y);ctx.arc(x,y,q,0,TAU)},ell=(x,y,a,b)=>{ctx.moveTo(x+a,y);ctx.ellipse(x,y,a,b,0,0,TAU)};
 const poly=(n,a,b,rot)=>{const m=b?n*2:n;for(let i=0;i<m;i++){const g=(rot===undefined?-HALF:rot)+i*TAU/m,q=b&&i%2?b:a;ctx.lineTo(Math.cos(g)*q,Math.sin(g)*q)}},pl=(r,p)=>p.forEach(([x,y])=>ctx.lineTo(x*r,y*r));
-const SH={diamond:r=>pl(r,[[0,-1.25],[1,0],[0,1.25],[-1,0]]),hex:r=>poly(6,r*1.08,0,0),gem:r=>poly(8,r*1.15,0,Math.PI/8),star:r=>poly(5,r*1.4,r*.58),tri:r=>poly(3,r*1.35),square:r=>poly(4,r*1.3,0,Math.PI/4),plus:r=>pl(r,[[-.45,-1.2],[.45,-1.2],[.45,-.45],[1.2,-.45],[1.2,.45],[.45,.45],[.45,1.2],[-.45,1.2],[-.45,.45],[-1.2,.45],[-1.2,-.45],[-.45,-.45]]),bolt:r=>pl(r,[[.25,-1.4],[-.85,.15],[-.05,.15],[-.3,1.4],[.85,-.2],[.05,-.2]]),heart:r=>{ctx.moveTo(0,r*.95);ctx.bezierCurveTo(-r*1.8,-r*.1,-r*.8,-r*1.6,0,-r*.5);ctx.bezierCurveTo(r*.8,-r*1.6,r*1.8,-r*.1,0,r*.95)},flower:r=>{for(let i=0;i<6;i++){const g=i*TAU/6,x=Math.cos(g)*r*.62,y=Math.sin(g)*r*.62;ctx.moveTo(x+r*.5,y);ctx.arc(x,y,r*.5,0,TAU)}ctx.moveTo(r*.6,0);ctx.arc(0,0,r*.6,0,TAU)}};
+const SH={skull:r=>{ctx.arc(0,-r*.15,r*1.05,Math.PI,0);ctx.lineTo(r*.62,r*1.15);ctx.lineTo(-r*.62,r*1.15)},
+ ghost:r=>{ctx.arc(0,-r*.1,r,Math.PI,0);for(const[x,y]of[[1,1.1],[.5,.8],[0,1.1],[-.5,.8],[-1,1.1]])ctx.lineTo(x*r,y*r)},
+ cat:r=>{cir(0,0,r);sub(r,[[-.95,-.2],[-.85,-1.45],[-.1,-.85]]);sub(r,[[.95,-.2],[.85,-1.45],[.1,-.85]])},
+ crown:r=>pl(r,[[-1.2,.8],[-1.2,-.7],[-.6,0],[0,-1],[.6,0],[1.2,-.7],[1.2,.8]]),
+ moon:r=>{ctx.arc(0,0,r*1.2,-.97,.97,true);ctx.arc(r*.55,0,r,1.446,Math.PI*2-1.446,false)},
+ sun:r=>poly(10,r*1.4,r*.92),
+ snow:r=>{for(let i=0;i<3;i++){const a=i*Math.PI/3,c=Math.cos(a),s=Math.sin(a),L=1.4,W=.2;sub(r,[[-L*c+W*s,-L*s-W*c],[L*c+W*s,L*s-W*c],[L*c-W*s,L*s+W*c],[-L*c-W*s,-L*s+W*c]])}},
+ flame:r=>pl(r,[[0,-1.55],[.3,-.8],[.68,-1.1],[.98,-.2],[.95,.55],[.55,1.15],[0,1.3],[-.55,1.15],[-.95,.55],[-.98,-.2],[-.62,-.75],[-.3,-.35]]),
+ drop:r=>{ctx.moveTo(0,-r*1.45);ctx.bezierCurveTo(r*.35,-r*.6,r,-r*.1,r,r*.5);ctx.bezierCurveTo(r,r*1.3,-r,r*1.3,-r,r*.5);ctx.bezierCurveTo(-r,-r*.1,-r*.35,-r*.6,0,-r*1.45)},
+ clover:r=>{for(const[x,y]of[[-.5,-.5],[.5,-.5],[-.5,.5],[.5,.5]])cir(x*r,y*r,r*.62)},
+ robot:r=>{sub(r,[[-1.1,-.95],[1.1,-.95],[1.1,1],[-1.1,1]]);sub(r,[[-.1,-.95],[.1,-.95],[.1,-1.4],[-.1,-1.4]])},
+ alien:r=>{ctx.moveTo(0,-r*1.3);ctx.bezierCurveTo(r*1.6,-r*1.3,r*1.2,r*.9,0,r*1.35);ctx.bezierCurveTo(-r*1.2,r*.9,-r*1.6,-r*1.3,0,-r*1.3)},
+ pumpkin:r=>{ell(-r*.5,0,r*.62,r);ell(r*.5,0,r*.62,r);ell(0,0,r*.6,r*1.05);sub(r,[[-.12,-1],[.12,-1],[.22,-1.45],[-.05,-1.45]])},
+ rocket:r=>{ctx.moveTo(0,-r*1.55);ctx.bezierCurveTo(r*.85,-r*.7,r*.7,r*.5,r*.55,r*.95);ctx.lineTo(-r*.55,r*.95);ctx.bezierCurveTo(-r*.7,r*.5,-r*.85,-r*.7,0,-r*1.55);sub(r,[[.5,.05],[1.3,1.25],[.5,.9]]);sub(r,[[-.5,.05],[-1.3,1.25],[-.5,.9]])},
+ diamond:r=>pl(r,[[0,-1.25],[1,0],[0,1.25],[-1,0]]),hex:r=>poly(6,r*1.08,0,0),gem:r=>poly(8,r*1.15,0,Math.PI/8),star:r=>poly(5,r*1.4,r*.58),tri:r=>poly(3,r*1.35),square:r=>poly(4,r*1.3,0,Math.PI/4),plus:r=>pl(r,[[-.45,-1.2],[.45,-1.2],[.45,-.45],[1.2,-.45],[1.2,.45],[.45,.45],[.45,1.2],[-.45,1.2],[-.45,.45],[-1.2,.45],[-1.2,-.45],[-.45,-.45]]),bolt:r=>pl(r,[[.25,-1.4],[-.85,.15],[-.05,.15],[-.3,1.4],[.85,-.2],[.05,-.2]]),heart:r=>{ctx.moveTo(0,r*.95);ctx.bezierCurveTo(-r*1.8,-r*.1,-r*.8,-r*1.6,0,-r*.5);ctx.bezierCurveTo(r*.8,-r*1.6,r*1.8,-r*.1,0,r*.95)},flower:r=>{for(let i=0;i<6;i++){const g=i*TAU/6,x=Math.cos(g)*r*.62,y=Math.sin(g)*r*.62;ctx.moveTo(x+r*.5,y);ctx.arc(x,y,r*.5,0,TAU)}ctx.moveTo(r*.6,0);ctx.arc(0,0,r*.6,0,TAU)}};
 function ballShape(r){ctx.beginPath();if(skin==="ring"){ctx.lineWidth=4;ctx.arc(0,0,r-2,0,TAU);ctx.stroke();return}
  if(SH[skin])SH[skin](r);else ctx.arc(0,0,r,0,TAU);ctx.closePath();ctx.fill()}
 function ballDet(r){const d="rgba(0,0,0,.55)";ctx.lineWidth=2;ctx.strokeStyle=d;ctx.fillStyle=d;
  if(skin==="smiley"){ctx.beginPath();ctx.arc(-r*.35,-r*.22,r*.14,0,TAU);ctx.arc(r*.35,-r*.22,r*.14,0,TAU);ctx.fill();ctx.beginPath();ctx.arc(0,r*.05,r*.5,.25,Math.PI-.25);ctx.stroke()}
  else if(skin==="bullseye"){for(const k of[.65,.3]){ctx.beginPath();ctx.arc(0,0,r*k,0,TAU);ctx.stroke()}}
  else if(skin==="beach"){ctx.strokeStyle="rgba(255,255,255,.6)";ctx.lineWidth=2.4;for(let i=0;i<3;i++){const g=i*Math.PI/3;ctx.beginPath();ctx.moveTo(Math.cos(g)*r,Math.sin(g)*r);ctx.lineTo(-Math.cos(g)*r,-Math.sin(g)*r);ctx.stroke()}}
- else if(skin==="eye"){ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,0,r*.62,0,TAU);ctx.fill();ctx.fillStyle="#05060f";ctx.beginPath();ctx.arc(0,0,r*.3,0,TAU);ctx.fill()}}
+ else if(skin==="eye"){ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,0,r*.62,0,TAU);ctx.fill();ctx.fillStyle="#05060f";ctx.beginPath();ctx.arc(0,0,r*.3,0,TAU);ctx.fill()}
+ else detNew(skin,r)}
+function detNew(k,r){const f=(x,y,a,b)=>{ctx.beginPath();ctx.ellipse(x,y,a,b,0,0,TAU);ctx.fill()},tri=(a,b,c,d,e,g)=>{ctx.beginPath();ctx.moveTo(a*r,b*r);ctx.lineTo(c*r,d*r);ctx.lineTo(e*r,g*r);ctx.closePath();ctx.fill()};
+ if(k==="skull"){f(-r*.42,-r*.2,r*.28,r*.31);f(r*.42,-r*.2,r*.28,r*.31);tri(0,.1,-.14,.42,.14,.42);ctx.lineWidth=1.4;for(const x of[-.3,0,.3]){ctx.beginPath();ctx.moveTo(x*r,r*.78);ctx.lineTo(x*r,r*1.1);ctx.stroke()}}
+ else if(k==="ghost"){f(-r*.38,-r*.2,r*.17,r*.25);f(r*.38,-r*.2,r*.17,r*.25);f(0,r*.26,r*.16,r*.2)}
+ else if(k==="cat"){f(-r*.4,-r*.1,r*.15,r*.22);f(r*.4,-r*.1,r*.15,r*.22);tri(-.14,.2,.14,.2,0,.4)}
+ else if(k==="robot"){ctx.fillRect(-r*.65,-r*.4,r*.4,r*.4);ctx.fillRect(r*.25,-r*.4,r*.4,r*.4);ctx.fillRect(-r*.55,r*.38,r*1.1,r*.2)}
+ else if(k==="alien"){for(const s of[-1,1]){ctx.save();ctx.translate(s*r*.55,-r*.05);ctx.rotate(-s*.5);f(0,0,r*.42,r*.2);ctx.restore()}}
+ else if(k==="pumpkin"){tri(-.62,-.1,-.2,-.1,-.41,-.5);tri(.62,-.1,.2,-.1,.41,-.5);ctx.lineWidth=2;ctx.lineJoin="round";ctx.beginPath();ctx.moveTo(-r*.55,r*.3);ctx.lineTo(-r*.3,r*.62);ctx.lineTo(0,r*.32);ctx.lineTo(r*.3,r*.62);ctx.lineTo(r*.55,r*.3);ctx.stroke()}
+ else if(k==="rocket"){ctx.fillStyle="#fff";f(0,-r*.3,r*.3,r*.3);ctx.fillStyle="rgba(0,0,0,.55)";f(0,-r*.3,r*.14,r*.14)}
+ else if(k==="sun"){ctx.beginPath();ctx.arc(0,0,r*.55,0,TAU);ctx.stroke()}
+ else if(k==="crown"){ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(-r*1.2,r*.38);ctx.lineTo(r*1.2,r*.38);ctx.stroke();ctx.fillStyle="#fff";f(0,-r*.5,r*.14,r*.14)}
+ else if(k==="flame"){ctx.fillStyle="rgba(255,255,255,.45)";f(0,r*.55,r*.38,r*.52)}
+ else if(k==="snow"){f(0,0,r*.26,r*.26)}}
 function drawTrail(c){if(trail==="none"||ball.trail.length<2)return;const T=ball.trail,n=T.length;ctx.save();ctx.fillStyle=c;ctx.strokeStyle=c;
  if(trail==="line"){ctx.lineCap="round";for(let i=1;i<n;i++){ctx.globalAlpha=i/n*.7;ctx.lineWidth=ball.r*1.4*i/n;ctx.beginPath();ctx.moveTo(T[i-1].x,T[i-1].y-camY);ctx.lineTo(T[i].x,T[i].y-camY);ctx.stroke()}ctx.restore();return}
  ctx.textAlign="center";ctx.lineWidth=1.6;for(let i=0;i<n;i++){if(trail==="dots"&&i%2)continue;const k=i/n,x=T[i].x,y=T[i].y-camY,q=ball.r*k;ctx.globalAlpha=k*(trail==="glow"?.28:.5);if(trail==="rainbow")ctx.fillStyle=COLORS[i%4];
@@ -541,7 +576,7 @@ $("vibrationToggle").onchange=e=>{vibOn=e.target.checked;store.set("oryvexVib2",
 $("reduceToggle").onchange=e=>{reduce=e.target.checked;fx=!reduce&&!slow;document.documentElement.classList.toggle("lite",reduce||slow);store.set("oryvexReduce",reduce)};
 document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;store.set("oryvexMode",mode);refreshHome()});
 on("dailyBtn",()=>{renderDaily();show("dailyScreen")});
-on("claimBtn",()=>{if(store.get("oryvexDaily","")!==today()){const s=streakNow(),r=REW[s%7];store.set("oryvexStreak",s+1);store.set("oryvexDaily",today());bank+=r;store.set("oryvexBank",bank);toast("+"+r+" ✦ DAILY REWARD");buzz(15)}show("startScreen");refreshHome()});
+on("claimBtn",()=>{if(!claimedToday()){const s=streakNow(),r=REW[s%7];store.set("oryvexStreak",s+1);store.set("oryvexDaily",today());store.set("oryvexDailyN",dayN());bank+=r;store.set("oryvexBank",bank);toast("+"+r+" ✦ DAILY REWARD");buzz(15)}show("startScreen");refreshHome()});
 on("achBtn",()=>{renderAch();show("achScreen")});on("achBackBtn",()=>show("startScreen"));
 on("expBtn",async()=>{const o={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith("oryvex"))o[k]=localStorage.getItem(k)}}catch(e){}const c="OV1."+btoa(unescape(encodeURIComponent(JSON.stringify(o))));try{await navigator.clipboard.writeText(c);toast("SAVE CODE COPIED")}catch(e){prompt("Copy your save code:",c)}});
 on("impBtn",()=>{const c=prompt("Paste save code:");if(!c)return;if(!c.startsWith("OV1."))return toast("INVALID CODE");try{const o=JSON.parse(decodeURIComponent(escape(atob(c.slice(4)))));for(const k in o)if(k.startsWith("oryvex")&&typeof o[k]==="string")store.set(k,o[k]);toast("SAVE LOADED");setTimeout(()=>location.reload(),700)}catch(e){toast("INVALID CODE")}});
@@ -555,6 +590,10 @@ $("sfxVol").value=Math.round(sfxVol*100);$("musVol").value=Math.round(musVol*100
 document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});addEventListener("blur",pause);
 document.addEventListener("click",e=>{if(e.target.closest&&e.target.closest("button"))tone(340,.05,"sine",.03,260)});
 addEventListener("resize",resize);
+/* new day at 12:00 AM: refresh the daily reward and daily best even while the game stays open */
+let dayKey=today();
+function dayWatch(){const t=today();if(t===dayKey)return;dayKey=t;best.daily=0;store.set("oryvexBest_daily",0);store.set("oryvexBestDay",t);if(state!=="playing"){refreshHome();if(!$("dailyScreen").classList.contains("hidden"))renderDaily();toast("NEW DAY. DAILY REWARD READY")}}
+setInterval(dayWatch,10000);document.addEventListener("visibilitychange",dayWatch);addEventListener("focus",dayWatch);addEventListener("pageshow",dayWatch);
 resize();refreshHome();setState("start");last=performance.now();requestAnimationFrame(loop);
 if("serviceWorker" in navigator&&location.protocol!=="file:")addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}));
 })();

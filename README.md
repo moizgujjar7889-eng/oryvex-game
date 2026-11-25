@@ -38,9 +38,9 @@ Tap to bounce your ball upward. Gravity pulls it back down. You can only pass th
 ## Features
 
 - 4 game modes with separate best scores
-- 16 collectible ball skins and 9 trails, bought with stars
+- 30 collectible ball skins (skeleton, ghost, cat, robot, alien, rocket, crown and more) and 9 trails, bought with stars
 - 11 achievements with star rewards
-- Daily reward with a 7-day streak
+- Daily reward with a 7-day streak that rolls over at 12:00 AM
 - Global leaderboard (Firebase, optional)
 - Original synth music (rendered once into a light loop, so the game stays smooth) and sound effects, on **separate music and sound buses with their own volume sliders**
 - **Every color has its own sound**: touching blue, yellow, purple or pink plays a different note
@@ -83,7 +83,7 @@ Then open `http://localhost:8000`.
 3. Settings → Pages → **Deploy from a branch** → `main` / `(root)` → Save.
 4. Open the Pages URL on your phone and install it.
 
-> After uploading a new version, bump the `CACHE` name in `service-worker.js` (e.g. `oryvex-v17`) so players get the update.
+> After uploading a new version, bump the `CACHE` name in `service-worker.js` (e.g. `oryvex-v18`) so players get the update.
 
 ## Leaderboard setup
 
