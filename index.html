@@ -310,7 +310,7 @@ function updateHud(){const m=MODES[mode],el=$("hudScore");if(el.textContent!==St
 function refreshHome(){$("homeBest").textContent=best[mode];$("bank").textContent=bank;$("modeNote").textContent=NOTES[mode];document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));const c=claimedToday();$("dailyBtn").classList.toggle("done",c);$("dailyBtn").classList.toggle("ready",!c);$("dailyNote").textContent=c?"Daily reward claimed. Come back tomorrow.":"Daily reward ready: +"+REW[streakNow()%7]+" ✦"}
 
 /* ---------- collection, streak, leaderboard, music ---------- */
-const SKINS0=[["orb","ORB",0],["ring","RING",15],["diamond","DIAMOND",30],["square","SQUARE",35],["tri","TRIANGLE",35],["star","STAR",40],["heart","HEART",45],["hex","HEX",50],["plus","CROSS",55],["bolt","BOLT",70],["flower","FLOWER",80],["gem","GEM",90],["smiley","SMILEY",100],["bullseye","TARGET",120],["beach","BEACH BALL",140],["eye","EYE",180]],SKINS=SKINS0.concat([["drop","DROP",25],["clover","CLOVER",50],["moon","MOON",65],["ghost","GHOST",70],["skull","SKELETON",75],["cat","CAT",85],["robot","ROBOT",95],["alien","ALIEN",105],["rocket","ROCKET",115],["pumpkin","PUMPKIN",130],["sun","SUN",150],["snow","SNOWFLAKE",160],["flame","FLAME",200],["crown","CROWN",250]]).sort((a,b)=>a[2]-b[2]),TRAILS=[["none","NONE",0],["glow","GLOW",10],["dots","DOTS",25],["line","LINE",30],["comet","COMET",40],["spark","SPARK",45],["bubbles","BUBBLES",55],["rainbow","RAINBOW",70],["stars","STARS",85]];
+const SKINS0=[["orb","ORB",0],["ring","RING",15],["diamond","DIAMOND",30],["square","SQUARE",35],["tri","TRIANGLE",35],["star","STAR",40],["heart","HEART",45],["hex","HEX",50],["plus","CROSS",55],["bolt","BOLT",70],["flower","FLOWER",80],["gem","GEM",90],["smiley","SMILEY",100],["bullseye","TARGET",120],["beach","BEACH BALL",140],["eye","EYE",180]],SKINS=SKINS0.concat([["drop","DROP",25],["clover","CLOVER",50],["moon","MOON",65],["ghost","GHOST",70],["skull","SKELETON",75],["cat","CAT",85],["robot","ROBOT",95],["alien","ALIEN",105],["rocket","ROCKET",115],["pumpkin","PUMPKIN",130],["sun","SUN",150],["snow","SNOWFLAKE",160],["flame","FLAME",200],["crown","CROWN",250]]).sort((a,b)=>a[2]-b[2]),TRAILS=[["none","NONE",0],["glow","GLOW",10],["dots","DOTS",25],["line","LINE",30],["comet","COMET",40],["spark","SPARK",45],["bubbles","BUBBLES",55],["rainbow","RAINBOW",70],["stars","STARS",85],["fire","FIRE",90],["hearts","HEARTS",95],["smoke","SMOKE",100],["pixel","PIXEL",110],["zigzag","LIGHTNING",120]].sort((a,b)=>a[2]-b[2]);
 let owned;try{owned=JSON.parse(store.get("oryvexOwned",'["orb","none"]'))}catch(e){owned=["orb","none"]}
 let stats;try{stats=JSON.parse(store.get("oryvexStats","{}"))||{}}catch(e){stats={}}stats.runs=stats.runs||0;stats.stars=stats.stars||0;stats.daily=stats.daily||0;const saveStats=()=>store.set("oryvexStats",JSON.stringify(stats));
 let ach;try{ach=JSON.parse(store.get("oryvexAch","{}"))||{}}catch(e){ach={}}
@@ -318,8 +318,9 @@ const ACH=[["a1","FIRST FLIGHT","Finish your first run",5,s=>s.runs>=1],["a2","S
 function checkAch(){for(const[i,n,d,r,t]of ACH)if(!ach[i]&&t(stats)){ach[i]=1;store.set("oryvexAch",JSON.stringify(ach));bank+=r;store.set("oryvexBank",bank);toast("\u{1F3C6} "+n+"  +"+r+" \u2726")}}
 function renderAch(){const el=$("achList");el.innerHTML="";let c=0;for(const[i,n,d,r]of ACH){const g=ach[i];if(g)c++;const row=document.createElement("div");row.className="row"+(g?" got":"");row.innerHTML="<span>"+n+"<small>"+d+"</small></span><b>"+(g?"\u2713":"+"+r+" \u2726")+"</b>";el.appendChild(row)}$("achCount").textContent=c+" / "+ACH.length+" UNLOCKED"}
 let skin=store.get("oryvexSkin","orb"),trail=store.get("oryvexTrail","none");
-function renderShop(){$("shopBank").textContent=bank;[["skinList",SKINS,"skin"],["trailList",TRAILS,"trail"]].forEach(([id,L,k])=>{const el=$(id);el.innerHTML="";L.forEach(([i,n,c])=>{const b=document.createElement("button"),has=owned.includes(i),sel=(k==="skin"?skin:trail)===i;b.className="opt"+(k==="skin"?" skn":"")+(sel?" on":"");b.innerHTML=n+"<small>"+(sel?"EQUIPPED":has?"OWNED":c+" ✦")+"</small>";
- b.onclick=()=>{if(!has){if(bank<c){toast("NEED "+c+" ✦");return}bank-=c;store.set("oryvexBank",bank);owned.push(i);store.set("oryvexOwned",JSON.stringify(owned))}if(k==="skin"){skin=i;store.set("oryvexSkin",i)}else{trail=i;store.set("oryvexTrail",i)}renderShop();refreshHome()};if(k==="skin")b.prepend(skinIcon(i,L.findIndex(x=>x[0]===i)));el.appendChild(b)})})}
+function renderShop(){$("shopBank").textContent=bank;[["skinList",SKINS,"skin"],["trailList",TRAILS,"trail"]].forEach(([id,L,k])=>{const el=$(id);el.innerHTML="";L.forEach(([i,n,c])=>{const b=document.createElement("button"),has=owned.includes(i),sel=(k==="skin"?skin:trail)===i;b.className="opt skn"+(sel?" on":"");b.innerHTML=n+"<small>"+(sel?"EQUIPPED":has?"OWNED":c+" ✦")+"</small>";
+ b.onclick=()=>{if(!has){if(bank<c){toast("NEED "+c+" ✦");return}bank-=c;store.set("oryvexBank",bank);owned.push(i);store.set("oryvexOwned",JSON.stringify(owned))}if(k==="skin"){skin=i;store.set("oryvexSkin",i)}else{trail=i;store.set("oryvexTrail",i)}renderShop();refreshHome()};b.prepend(k==="skin"?skinIcon(i,L.findIndex(x=>x[0]===i)):trailIcon(i,L.findIndex(x=>x[0]===i)));el.appendChild(b)})})}
+function trailIcon(id,idx){const c=document.createElement("canvas");c.width=c.height=68;c.className="sk";const o=ctx,ob=ball,ot=trail,oc=camY;try{ctx=c.getContext("2d");trail=id;camY=0;const T=[];for(let i=0;i<16;i++)T.push({x:10+i*3.1+Math.sin(i*.55)*3,y:58-i*3.1});ball={r:9,trail:T,x:T[15].x,y:T[15].y};const col=COLORS[idx%4];drawTrail(col);drawTrail(col);ctx.fillStyle=col;ctx.beginPath();ctx.arc(T[15].x,T[15].y,9,0,TAU);ctx.fill();ctx.fillStyle="rgba(255,255,255,.3)";ctx.beginPath();ctx.ellipse(T[15].x-3,T[15].y-4,3.5,2,-.5,0,TAU);ctx.fill()}catch(e){}ctx=o;ball=ob;trail=ot;camY=oc;return c}
 function skinIcon(id,idx){const c=document.createElement("canvas");c.width=c.height=68;c.className="sk";const o=ctx,os=skin;try{ctx=c.getContext("2d");skin=id;ctx.translate(34,34);const col=COLORS[idx%4],r=17;ctx.fillStyle=col;ctx.strokeStyle=col;ctx.shadowBlur=0;ballShape(r);ballDet(r);ctx.fillStyle="rgba(255,255,255,.3)";ctx.beginPath();ctx.ellipse(-r*.3,-r*.4,r*.38,r*.22,-.5,0,TAU);ctx.fill()}catch(e){}ctx=o;skin=os;return c}
 const ymd=d=>d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(),yest=()=>{const d=new Date(nowMs());d.setDate(d.getDate()-1);return ymd(d)},REW=[10,10,15,15,20,20,50];
 if(store.get("oryvexBestDay","")!==today()){best.daily=0;store.set("oryvexBest_daily",0);store.set("oryvexBestDay",today())}
@@ -404,8 +405,13 @@ function detNew(k,r){const f=(x,y,a,b)=>{ctx.beginPath();ctx.ellipse(x,y,a,b,0,0
  else if(k==="snow"){f(0,0,r*.26,r*.26)}}
 function drawTrail(c){if(trail==="none"||ball.trail.length<2)return;const T=ball.trail,n=T.length;ctx.save();ctx.fillStyle=c;ctx.strokeStyle=c;
  if(trail==="line"){ctx.lineCap="round";for(let i=1;i<n;i++){ctx.globalAlpha=i/n*.7;ctx.lineWidth=ball.r*1.4*i/n;ctx.beginPath();ctx.moveTo(T[i-1].x,T[i-1].y-camY);ctx.lineTo(T[i].x,T[i].y-camY);ctx.stroke()}ctx.restore();return}
+ if(trail==="zigzag"){ctx.lineCap="round";ctx.lineJoin="round";ctx.lineWidth=2.6;for(let pass=0;pass<2;pass++){ctx.globalAlpha=pass?.95:.3;ctx.lineWidth=pass?2.2:6;ctx.strokeStyle=pass?"#fff":c;ctx.beginPath();for(let i=0;i<n;i++){const k=i/n,x=T[i].x+(i%2?4:-4)*k,y=T[i].y-camY;i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke()}ctx.restore();return}
  ctx.textAlign="center";ctx.lineWidth=1.6;for(let i=0;i<n;i++){if(trail==="dots"&&i%2)continue;const k=i/n,x=T[i].x,y=T[i].y-camY,q=ball.r*k;ctx.globalAlpha=k*(trail==="glow"?.28:.5);if(trail==="rainbow")ctx.fillStyle=COLORS[i%4];
-  if(trail==="bubbles"){ctx.beginPath();ctx.arc(x+Math.sin(i*2)*4,y,q*.8,0,TAU);ctx.stroke()}else if(trail==="spark")ctx.fillRect(x-q*.4,y-q*.4,q*.8,q*.8);else if(trail==="stars"){ctx.font=(q*2+2)+"px system-ui";ctx.fillText("\u2726",x,y+q*.6)}
+  if(trail==="bubbles"){ctx.beginPath();ctx.arc(x+Math.sin(i*2)*4,y,q*.8,0,TAU);ctx.stroke()}else if(trail==="spark")ctx.fillRect(x-q*.4,y-q*.4,q*.8,q*.8);
+  else if(trail==="fire"){ctx.fillStyle=k>.75?"#fff3a0":k>.45?"#ffb020":k>.2?"#ff5a10":"#c01800";ctx.globalAlpha=k*.75;ctx.beginPath();ctx.arc(x+Math.sin(i*3+clock*18)*2.2,y-(1-k)*7,q*.95+1,0,TAU);ctx.fill()}
+  else if(trail==="hearts"){ctx.font=(q*1.8+3)+"px system-ui";ctx.fillText("\u2665",x+Math.sin(i*1.7)*3,y-(1-k)*5)}
+  else if(trail==="smoke"){ctx.fillStyle="#cfd8ff";ctx.globalAlpha=k*.2;ctx.beginPath();ctx.arc(x+Math.sin(i*2.3)*3,y-(1-k)*6,ball.r*(.35+(1-k)*.9),0,TAU);ctx.fill()}
+  else if(trail==="pixel"){const z=Math.max(2,q*.9);ctx.fillRect(Math.round(x/3)*3-z/2,Math.round(y/3)*3-z/2,z,z)}else if(trail==="stars"){ctx.font=(q*2+2)+"px system-ui";ctx.fillText("\u2726",x,y+q*.6)}
   else{ctx.beginPath();ctx.arc(x,y,trail==="dots"?ball.r*.35:trail==="comet"?q:q*.9,0,TAU);ctx.fill()}}ctx.restore()}
 let dip=null;const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone;
 addEventListener("beforeinstallprompt",e=>{e.preventDefault();dip=e;$("installBtn").classList.remove("hidden")});
@@ -422,26 +428,27 @@ function menuDemo(){obstacles=[];items=[];[[.1,.18,40],[.93,.46,48],[.08,.82,44]
 
 /* ---------- obstacles ---------- */
 function mk(type,level){const R=clamp(w*.145,40,56),m=MODES[mode];
- const o={type,x:w/2,y:0,R,th:11,rot:srand(0,TAU),dir:sr()<.5?-1:1,off:Math.floor(srand(0,4)),spd:(.8+Math.min(level,18)*.06)*m.speed,scroll:srand(0,500),scroll2:srand(0,500),passed:false};
- if(type==="bars"||type==="bars2")o.th=12;
- o.ext={ring:R+7,double:R*1.05+6,windmill:R*1.1+6,square:R*1.05+6,triangle:R*1.15+6,bars:9,triple:R*1.15+8,bars2:23,pentagon:R*1.15+6,hexagon:R*1.2+6}[type];return o}
-function spawn(){const n=count++,lv=Math.floor(n/5)+1,level=lv-1,ORDER=["ring","double","windmill","bars","square","triangle","triple","bars2","pentagon","hexagon"],types=ORDER.slice(0,Math.min(ORDER.length,lv));
+ const o={type,x:w/2,y:0,R,th:11,rot:srand(0,TAU),dir:sr()<.5?-1:1,off:Math.floor(srand(0,4)),spd:(.8+Math.min(level,24)*.065+clamp(level-24,0,20)*.012)*m.speed,ph:srand(0,TAU),pls:level>=5&&sr()<Math.min(.7,(level-4)*.08),scroll:srand(0,500),scroll2:srand(0,500),passed:false};
+ if(type==="bars"||type==="bars2"||type==="bars3")o.th=12;
+ o.ext={ring:R+7,double:R*1.05+6,windmill:R*1.1+6,square:R*1.05+6,triangle:R*1.15+6,bars:9,triple:R*1.15+8,bars2:23,pentagon:R*1.15+6,hexagon:R*1.2+6,windmill6:R*1.1+6,octagon:R*1.25+6,bars3:38}[type];return o}
+function spawn(){const n=count++,lv=Math.floor(n/5)+1,level=lv-1,ORDER=["ring","double","windmill","bars","square","triangle","triple","bars2","pentagon","hexagon","windmill6","octagon","bars3"],types=ORDER.slice(0,Math.min(ORDER.length,lv));
  let type=spick(types);if(lv>1&&sr()<.4)type=types[types.length-1];if(type===lastType&&types.length>1)type=spick(types);lastType=type;
- const o=mk(type,level),gap=(n===0?50:srand(110,150))*MODES[mode].gap*clamp(1-level*.018,.72,1),prevEdge=edge;
+ const o=mk(type,level),gap=(n===0?50:srand(110,150))*MODES[mode].gap*clamp(1-level*.02,.55,1),prevEdge=edge;
  o.y=edge-gap-o.ext;edge=o.y-o.ext;obstacles.push(o);
- items.push({type:"star",x:w/2,y:(type==="bars"||type==="bars2")?o.y-34:o.y,r:8,taken:false});
+ items.push({type:"star",x:w/2,y:type==="bars3"?o.y-48:(type==="bars"||type==="bars2")?o.y-34:o.y,r:8,taken:false});
  if(n>=2&&sr()<.35)items.push({type:"orb",x:w/2,y:(prevEdge+o.y+o.ext)/2,r:10,taken:false})}
 function ringsOf(o){if(o.type==="triple")return[{r:o.R*1.15,rot:o.rot,off:o.off},{r:o.R*.85,rot:-o.rot*1.3+Math.PI/4,off:o.off+2},{r:o.R*.55,rot:o.rot*1.6,off:o.off+1}];if(o.type==="double"){const r=o.R*1.05;return[{r,rot:o.rot,off:o.off},{r:r*.62,rot:-o.rot+Math.PI/4,off:o.off+2}]}return[{r:o.R,rot:o.rot,off:o.off}]}
-const SIDES={square:4,triangle:3,pentagon:5,hexagon:6};
+const SIDES={square:4,triangle:3,pentagon:5,hexagon:6,octagon:8};
 function segsOf(o){const s=[],x=o.x,y=o.y,R=o.R;
- if(o.type==="windmill")for(let i=0;i<4;i++){const a=o.rot+i*HALF,L=R*1.1;s.push({x1:x,y1:y,x2:x+Math.cos(a)*L,y2:y+Math.sin(a)*L,c:mod(i+o.off,4)})}
- else if(SIDES[o.type]){const n=SIDES[o.type],rr=R*(o.type==="square"?1.05:o.type==="hexagon"?1.2:1.15),p=[];for(let i=0;i<n;i++){const a=o.rot+i*TAU/n-HALF;p.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr])}for(let i=0;i<n;i++){const q=p[(i+1)%n];s.push({x1:p[i][0],y1:p[i][1],x2:q[0],y2:q[1],c:mod(i+o.off,4)})}}
+ if(o.type==="windmill"||o.type==="windmill6")for(let i=0,N=o.type==="windmill"?4:6;i<N;i++){const a=o.rot+i*TAU/N,L=R*1.1;s.push({x1:x,y1:y,x2:x+Math.cos(a)*L,y2:y+Math.sin(a)*L,c:mod(i+o.off,4)})}
+ else if(SIDES[o.type]){const n=SIDES[o.type],rr=R*(o.type==="square"?1.05:o.type==="hexagon"?1.2:o.type==="octagon"?1.25:1.15),p=[];for(let i=0;i<n;i++){const a=o.rot+i*TAU/n-HALF;p.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr])}for(let i=0;i<n;i++){const q=p[(i+1)%n];s.push({x1:p[i][0],y1:p[i][1],x2:q[0],y2:q[1],c:mod(i+o.off,4)})}}
  return s}
 const colorAt=(a,off)=>mod(Math.floor(mod(a,TAU)/HALF)+off,4);
 const colorAtX=(o,x,sc=o.scroll,off=o.off)=>mod(Math.floor((x-sc)/(w*.3))+off,4);
 function distSeg(px,py,s){const dx=s.x2-s.x1,dy=s.y2-s.y1,l=dx*dx+dy*dy,t=l?clamp(((px-s.x1)*dx+(py-s.y1)*dy)/l,0,1):0;return Math.hypot(px-(s.x1+t*dx),py-(s.y1+t*dy))}
 function touchMask(o){const br=ball.r*.55,dx=ball.x-o.x,dy=ball.y-o.y;let m=0;
  if(o.type==="bars"){if(Math.abs(dy)<o.th/2+br-1)m|=1<<colorAtX(o,ball.x);return m}
+ if(o.type==="bars3"){if(Math.abs(dy+26)<o.th/2+br-1)m|=1<<colorAtX(o,ball.x);if(Math.abs(dy)<o.th/2+br-1)m|=1<<colorAtX(o,ball.x,o.scroll2,o.off+1);if(Math.abs(dy-26)<o.th/2+br-1)m|=1<<colorAtX(o,ball.x,o.scroll,o.off+2);return m}
  if(o.type==="bars2"){if(Math.abs(dy+15)<o.th/2+br-1)m|=1<<colorAtX(o,ball.x);if(Math.abs(dy-15)<o.th/2+br-1)m|=1<<colorAtX(o,ball.x,o.scroll2,o.off+1);return m}
  if(isRing(o)){const d=Math.hypot(dx,dy),a=Math.atan2(dy,dx);for(const r of ringsOf(o))if(Math.abs(d-r.r)<o.th/2+br)m|=1<<colorAt(a-r.rot,r.off);return m}
  for(const s of segsOf(o))if(distSeg(ball.x,ball.y,s)<o.th/2+br)m|=1<<s.c;return m}
@@ -449,7 +456,7 @@ function touchMask(o){const br=ball.r*.55,dx=ball.x-o.x,dy=ball.y-o.y;let m=0;
 const CS=[["sine",523.25,.09],["triangle",587.33,.09],["square",659.25,.032],["sawtooth",783.99,.035]];
 function cnote(c,hard){const[t,f,v]=CS[c];tone(f,hard?.3:.16,t,hard?v*1.3:v,hard?f*.5:f*1.02);if(!hard)tone(f*2,.1,"sine",.02)}
 let lastTouchT=0;
-function touchFx(c){const n=performance.now();if(n-lastTouchT<40)return;lastTouchT=n;cnote(c);wave(ball.x,ball.y,COLORS[c]);burst(ball.x,ball.y,COLORS[c],6)}
+function touchFx(c){const n=performance.now();if(n-lastTouchT<40)return;lastTouchT=n;cnote(c)}
 
 /* ---------- effects ---------- */
 function burst(x,y,c,n=22){if(!fx)n=Math.ceil(n/2);for(let i=0;i<n&&parts.length<260;i++){const a=rand(0,TAU),v=rand(70,320);parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:rand(.4,.85),max:.85,r:rand(1.8,4),c})}}
@@ -459,7 +466,7 @@ function fxUpdate(dt){for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=380*
  for(const a of waves){a.r+=170*dt;a.life-=dt}waves=waves.filter(a=>a.life>0);
  for(const t of texts){t.y-=40*dt;t.life-=dt}texts=texts.filter(t=>t.life>0);
  shake=Math.max(0,shake-dt*30);flash=Math.max(0,flash-dt*3);if(banner){banner.life-=dt;if(banner.life<=0)banner=null}
- if(ball&&state==="playing"){ball.trail.push({x:ball.x,y:ball.y});if(ball.trail.length>12)ball.trail.shift()}}
+ if(ball&&state==="playing"){ball.trail.push({x:ball.x,y:ball.y});if(ball.trail.length>16)ball.trail.shift()}}
 
 /* ---------- game flow ---------- */
 function startGame(){sr=mode==="daily"?mulberry(hash(today())):Math.random;if(mode==="daily"){stats.daily++;saveStats()}tutT=0;ball={x:w/2,y:h*.7,hy:h*.7,vy:0,r:9,color:Math.floor(sr()*4),trail:[]};
@@ -479,7 +486,7 @@ function fell(){invuln=0;hurt();if(state==="playing"){ball.y=camY+h*.65;ball.vy=
 function switchColor(c){let n=Math.floor(Math.random()*3);if(n>=ball.color)n++;ball.color=n;burst(c.x,c.y,COLORS[n],18);wave(c.x,c.y,COLORS[n]);tone(660,.16,"sine",.05,1100);buzz(12)}
 function collect(){for(const c of items){if(c.taken)continue;if(Math.hypot(ball.x-c.x,ball.y-c.y)<ball.r+c.r+4){c.taken=true;
   if(c.type==="star"){score++;runStars++;bank++;store.set("oryvexBank",bank);stats.stars++;saveStats();checkAch();burst(c.x,c.y,"#ffffff",10);wave(c.x,c.y,"#ffffff");pop("+1",c.x,c.y,"#fff");tone(980,.08,"sine",.04,1500);buzz(8)}else switchColor(c);updateHud()}}}
-function phys(sd){for(const o of obstacles){o.rot+=o.dir*o.spd*sd;if(o.type==="bars"||o.type==="bars2"){o.scroll=mod(o.scroll+o.dir*o.spd*70*sd,w*1.2);o.scroll2=mod(o.scroll2-o.dir*o.spd*70*sd,w*1.2)}}
+function phys(sd){for(const o of obstacles){const pk=o.pls?1+.5*Math.sin(clock*1.7+o.ph):1,v=o.spd*pk;o.rot+=o.dir*v*sd;if(o.type==="bars"||o.type==="bars2"||o.type==="bars3"){o.scroll=mod(o.scroll+o.dir*v*70*sd,w*1.2);o.scroll2=mod(o.scroll2-o.dir*v*70*sd,w*1.2)}}
  if(!started){ball.y=ball.hy+Math.sin(clock*3)*4;return}
  ball.vy=Math.min(ball.vy+G*sd,1000);ball.y+=ball.vy*sd;
  const tg=ball.y-h*.58;if(tg<camY)camY+=(tg-camY)*Math.min(1,sd*14);
@@ -489,7 +496,7 @@ function phys(sd){for(const o of obstacles){o.rot+=o.dir*o.spd*sd;if(o.type==="b
   if(Math.abs(ball.y-o.y)<o.ext+ball.r+2){const m=touchMask(o),bit=1<<ball.color,prev=o.tm||0,bad=m&~bit;o.tm=m;
    if(invuln<=0&&bad){hurt(31-Math.clz32(bad));if(state!=="playing")return}
    else{const nw=m&~prev;if(nw)touchFx(nw&bit?ball.color:31-Math.clz32(nw))}}else o.tm=0;
-  if(!o.passed&&ball.y<o.y-o.ext){o.passed=true;passedN++;tone(420+Math.min(passedN,40)*8,.05,"triangle",.025);const nl=Math.floor(passedN/5)+1;if(nl>lvl){lvl=nl;updateHud();checkAch();banner={t:"LEVEL "+lvl,life:1.7};wave(ball.x,ball.y,"#ffffff");tone(660,.14,"triangle",.05,990);buzz(15)}}}
+  if(!o.passed&&ball.y<o.y-o.ext){o.passed=true;passedN++;tone(420+Math.min(passedN,40)*8,.05,"triangle",.025);const nl=Math.floor(passedN/5)+1;if(nl>lvl){lvl=nl;updateHud();checkAch();banner={t:"LEVEL "+lvl,life:1.7};flash=.14;tone(660,.14,"triangle",.05,990);buzz(15)}}}
  collect()}
 function stepWorld(dt){const n=Math.min(6,Math.ceil(dt/.011));for(let i=0;i<n&&state==="playing";i++)phys(dt/n);
  if(state!=="playing")return;
@@ -513,6 +520,7 @@ function drawObstacle(o){const y=o.y-camY;if(y+o.ext<0||y-o.ext>h)return;const g
  /* pass 0 = soft halo (wide, faint stroke, no shadowBlur so it is cheap), pass 1 = crisp colors on top */
  for(let pass=fx?0:1;pass<2;pass++){const glow=pass===0;ctx.save();ctx.lineCap="butt";ctx.shadowBlur=0;if(glow)ctx.globalAlpha=ga*.17;
   if(o.type==="bars")drawBar(y,o.scroll,o.off,o.th,glow);
+  else if(o.type==="bars3"){drawBar(y-26,o.scroll,o.off,o.th,glow);drawBar(y,o.scroll2,o.off+1,o.th,glow);drawBar(y+26,o.scroll,o.off+2,o.th,glow)}
   else if(o.type==="bars2"){drawBar(y-15,o.scroll,o.off,o.th,glow);drawBar(y+15,o.scroll2,o.off+1,o.th,glow)}
   else if(isRing(o)){for(const r of ringsOf(o))for(let i=0;i<4;i++){const a0=r.rot+i*HALF,a1=a0+HALF,c=COLORS[mod(i+r.off,4)];
     ctx.strokeStyle=c;ctx.lineWidth=glow?o.th+11:o.th;ctx.beginPath();ctx.arc(o.x,y,r.r,a0,a1);ctx.stroke();
